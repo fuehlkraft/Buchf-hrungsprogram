@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fühlkraft · Buchhaltung</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#f7f3ee;--sand:#eae1d8;--terra:#c57f63;--terra-dk:#a8623e;--brown:#5a3224;--sage:#7a9e7e;--white:#fff;--text:#3a2418;--muted:#8a7060;--border:#d8cfc6;--sh:0 1px 6px rgba(58,36,24,.07);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;font-weight:300;background:var(--cream);color:var(--text);font-size:14px;}
+.app{display:flex;min-height:100vh;}
+aside{width:230px;flex-shrink:0;background:var(--brown);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;}
+.logo{padding:28px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);}
+.logo-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;letter-spacing:.18em;color:var(--cream);text-transform:uppercase;}
+.logo-sub{font-size:.67rem;letter-spacing:.22em;color:var(--terra);text-transform:uppercase;margin-top:3px;}
+nav{padding:16px 0;flex:1;overflow-y:auto;}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 22px;cursor:pointer;color:rgba(247,243,238,.5);font-size:.78rem;letter-spacing:.05em;transition:all .15s;border-left:3px solid transparent;user-select:none;}
+.ni:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.ni.active{color:var(--cream);border-left-color:var(--terra);background:rgba(255,255,255,.06);}
+.ni-ico{width:16px;text-align:center;font-size:.9rem;}
+.aside-foot{padding:16px 22px;border-top:1px solid rgba(255,255,255,.08);}
+.yr-sel{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:var(--cream);padding:7px 10px;font-family:'Lato',sans-serif;font-size:.78rem;cursor:pointer;outline:none;}
+.yr-sel option{background:var(--brown);}
+.main{margin-left:230px;flex:1;display:flex;flex-direction:column;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.tb-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;color:var(--brown);letter-spacing:.04em;}
+.content{padding:28px 32px;}
+.card{background:var(--white);border-radius:10px;border:1px solid var(--border);padding:22px;box-shadow:var(--sh);margin-bottom:16px;}
+.sh{display:flex;align-items:baseline;gap:10px;margin-bottom:16px;}
+.st{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;color:var(--brown);letter-spacing:.03em;}
+.sl{flex:1;height:1px;background:var(--border);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.kpi{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:18px 20px;box-shadow:var(--sh);}
+.kpi-l{font-size:.67rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.kpi-v{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:300;color:var(--brown);line-height:1;}
+.kpi-v.g{color:var(--sage);}.kpi-v.r{color:var(--terra);}.kpi-v.w{color:#c5a063;}
+.kpi-s{font-size:.7rem;color:var(--muted);margin-top:5px;}
+.kk{border-radius:10px;padding:16px 18px;border:1px solid transparent;position:relative;overflow:hidden;}
+.kk::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kk.sp{background:#f0f4ff;border-color:#c5d7fc;}.kk.sp::before{background:#2d5ab8;}
+.kk.pp{background:#f0f7fd;border-color:#b3d8f5;}.kk.pp::before{background:#003087;}
+.kk.ko{background:#f0f7f0;border-color:#b8e0b8;}.kk.ko::before{background:#1a6b1a;}
+.kk.ba{background:var(--sand);border-color:var(--border);}.kk.ba::before{background:var(--muted);}
+.kk.et{background:#fff5f0;border-color:#f5c5a3;}.kk.et::before{background:#f56400;}
+.kk-l{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.kk-v{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;}
+.fg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px;}
+.fg label{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.fr{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+input,select,textarea{border:1px solid var(--border);border-radius:6px;padding:8px 11px;font-family:'Lato',sans-serif;font-size:.85rem;font-weight:300;background:var(--cream);color:var(--text);outline:none;transition:border-color .15s,background .15s;width:100%;}
+input:focus,select:focus{border-color:var(--terra);background:var(--white);}
+.btn{display:inline-flex;align-items:center;gap:5px;border:none;border-radius:6px;padding:8px 16px;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:400;letter-spacing:.06em;cursor:pointer;transition:all .15s;text-transform:uppercase;}
+.bp{background:var(--terra);color:#fff;}.bp:hover{background:var(--terra-dk);}
+.bo{background:transparent;color:var(--brown);border:1px solid var(--border);}.bo:hover{border-color:var(--terra);color:var(--terra);}
+.bg{background:transparent;color:var(--muted);border:none;padding:5px 8px;font-size:.72rem;}.bg:hover{color:var(--terra);}
+.bs{padding:5px 10px;font-size:.7rem;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-weight:400;}
+td{padding:10px 12px;border-bottom:1px solid #f0ebe6;font-size:.83rem;font-weight:300;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#faf7f4;}
+.tr{text-align:right;white-space:nowrap;font-weight:400;}
+.tg{color:var(--sage);}.tr2{color:var(--terra);}.tw{color:#c5a063;}
+.tab-content{display:none;}.tab-content.active{display:block;}
+.prog{height:5px;background:var(--sand);border-radius:99px;overflow:hidden;margin:6px 0 3px;}
+.pf{height:100%;border-radius:99px;transition:width .5s;}
+.er{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0ebe6;font-size:.83rem;}
+.er.hd{font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);border-bottom-color:var(--border);padding-top:16px;}
+.er.tot{font-weight:700;border-top:2px solid var(--border);border-bottom:none;padding-top:10px;margin-top:4px;}
+.er.sub{color:var(--muted);font-size:.78rem;}.er.sub span:first-child{padding-left:14px;}
+.ins{display:flex;gap:12px;padding:14px 16px;border-radius:8px;margin-bottom:10px;border-left:3px solid;}
+.ins.tip{background:#fef9f7;border-color:var(--terra);}
+.ins.ok{background:#f5faf5;border-color:var(--sage);}
+.ins.wa{background:#fefbf0;border-color:#d4a843;}
+.ins.inf{background:#f0f4ff;border-color:#2d5ab8;}
+.ins-ico{font-size:1rem;flex-shrink:0;padding-top:2px;}
+.ins-t{font-size:.8rem;font-weight:700;letter-spacing:.03em;color:var(--brown);margin-bottom:3px;}
+.ins-x{font-size:.78rem;color:var(--muted);line-height:1.6;}
+.notice{background:var(--sand);border-radius:8px;padding:13px 16px;font-size:.78rem;color:var(--muted);line-height:1.7;border-left:3px solid var(--terra);margin-bottom:14px;}
+.notice strong{color:var(--brown);}
+.notice.ok{border-color:var(--sage);background:#f0f7f0;}
+.notice.bl{border-color:#2d5ab8;background:#f0f4ff;}
+/* SKR BADGE */
+.skr{display:inline-flex;align-items:center;gap:3px;padding:1px 7px;border-radius:4px;font-size:.68rem;font-weight:700;letter-spacing:.05em;background:#f5f0ff;color:#5b21b6;border:1px solid #ddd6fe;white-space:nowrap;}
+.tax-b{display:inline-flex;align-items:center;gap:3px;padding:1px 7px;border-radius:4px;font-size:.68rem;font-weight:700;letter-spacing:.05em;white-space:nowrap;}
+.tax-b.ku{background:#e8f5e8;color:#1a6b1a;border:1px solid #b8e0b8;}
+.tax-b.rc{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
+.tax-b.et{background:#fff5f0;color:#f56400;border:1px solid #f5c5a3;}
+.cb-wrap{display:flex;flex-direction:column;gap:4px;max-height:220px;overflow-y:auto;}
+.cb-row{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:7px;background:var(--cream);border:1px solid var(--border);}
+.cb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.cb-info{flex:1;min-width:0;}
+.cb-name{font-size:.8rem;font-weight:400;color:var(--brown);}
+.cb-detail{font-size:.72rem;color:var(--muted);margin-top:2px;}
+.cb-amt{font-size:.8rem;font-weight:400;text-align:right;flex-shrink:0;}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:65px;}
+.cc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.cb2{width:100%;border-radius:3px 3px 0 0;min-height:2px;}
+.cc-l{font-size:.58rem;color:var(--muted);}
+.tw-wrap{overflow-x:auto;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--brown);color:var(--cream);padding:9px 22px;border-radius:30px;font-size:.78rem;letter-spacing:.05em;z-index:999;opacity:0;transition:all .25s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:900px){.g4,.g5,.g3{grid-template-columns:repeat(2,1fr);}.g2{grid-template-columns:1fr;}}
+@media(max-width:700px){aside{width:100%;height:auto;position:static;}.main{margin-left:0;}.logo,.aside-foot{display:none;}nav{display:flex;flex-direction:row;padding:0;overflow-x:auto;}.ni{padding:12px 14px;border-left:none;border-bottom:3px solid transparent;flex-shrink:0;}.ni.active{border-bottom-color:var(--terra);border-left:none;}.app{flex-direction:column;}.content{padding:16px;}.topbar{padding:0 14px;}}
+@media print{aside,.topbar,.btn,nav,.notice{display:none!important;}.main{margin-left:0;}.content{padding:0;}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="logo"><div class="logo-name">Fühlkraft</div><div class="logo-sub">Buchhaltung · SKR 03</div></div>
+  <nav>
+    <div class="ni active" onclick="showTab('dashboard',this)"><span class="ni-ico">◈</span>Übersicht</div>
+    <div class="ni" onclick="showTab('erfassen',this)"><span class="ni-ico">＋</span>Erfassen</div>
+    <div class="ni" onclick="showTab('buchungen',this)"><span class="ni-ico">≡</span>Buchungen</div>
+    <div class="ni" onclick="showTab('etsy',this)"><span class="ni-ico">◎</span>Etsy-Import</div>
+    <div class="ni" onclick="showTab('bankimport',this)"><span class="ni-ico">↧</span>Bank-Import</div>
+    <div class="ni" onclick="showTab('steuern',this)"><span class="ni-ico">§</span>Steuern</div>
+    <div class="ni" onclick="showTab('skr',this)"><span class="ni-ico">≋</span>SKR 03</div>
+    <div class="ni" onclick="showTab('auswertung',this)"><span class="ni-ico">↗</span>Auswertung</div>
+    <div class="ni" onclick="showTab('rechnung',this)"><span class="ni-ico">◻</span>Rechnungen</div>
+    <div class="ni" onclick="showTab('oposten',this)"><span class="ni-ico">!</span>Offene Posten</div>
+    <div class="ni" onclick="showTab('wiederk',this)"><span class="ni-ico">↺</span>Wiederkehrend</div>
+    <div class="ni" onclick="showTab('schnell',this)"><span class="ni-ico">★</span>Schnell-Buchungen</div>
+    <div class="ni" onclick="showTab('export',this)"><span class="ni-ico">↓</span>Export</div>
+  </nav>
+  <div class="aside-foot">
+    <select class="yr-sel" id="yrSel" onchange="switchYear(this.value)">
+      <option value="2023">2023</option><option value="2024">2024</option>
+      <option value="2025" selected>2025</option><option value="2026">2026</option>
+    </select>
+  </div>
+</aside>
+
+<div class="main">
+<div class="topbar">
+  <div class="tb-title" id="tbTitle">Übersicht</div>
+  <div style="font-size:.68rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase" id="tbDate"></div>
+</div>
+<div class="content">
+
+<!-- ══ DASHBOARD ══ -->
+<div id="tab-dashboard" class="tab-content active">
+  <div class="g5" style="margin-bottom:14px">
+    <div class="kpi"><div class="kpi-l">Einnahmen</div><div class="kpi-v g" id="kE">0,00 €</div><div class="kpi-s" id="kEn">0 Buchungen</div></div>
+    <div class="kpi"><div class="kpi-l">Ausgaben</div><div class="kpi-v r" id="kA">0,00 €</div><div class="kpi-s" id="kAn">0 Buchungen</div></div>
+    <div class="kpi"><div class="kpi-l">Gewinn (EÜR)</div><div class="kpi-v" id="kG">0,00 €</div><div class="kpi-s">Einnahmen − Ausgaben</div></div>
+    <div class="kpi"><div class="kpi-l">Steuer-Reserve</div><div class="kpi-v w" id="kS">0,00 €</div><div class="kpi-s">~30 % zurücklegen</div></div>
+    <div class="kpi"><div class="kpi-l">KU-Auslastung</div><div class="kpi-v" id="kKU">0 %</div><div class="kpi-s">von 25.000 €</div></div>
+  </div>
+  <div class="sh"><span class="st">Konten</span><div class="sl"></div></div>
+  <div class="g5" style="margin-bottom:16px">
+    <div class="kk sp"><div class="kk-l">Sparkasse</div><div class="kk-v" id="cSp">0,00 €</div></div>
+    <div class="kk pp"><div class="kk-l">PayPal</div><div class="kk-v" id="cPp">0,00 €</div></div>
+    <div class="kk ko"><div class="kk-l">Kontist</div><div class="kk-v" id="cKo">0,00 €</div></div>
+    <div class="kk ba"><div class="kk-l">Barzahlung</div><div class="kk-v" id="cBa">0,00 €</div></div>
+    <div class="kk et"><div class="kk-l">Etsy (netto)</div><div class="kk-v" id="cEt">0,00 €</div></div>
+  </div>
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card">
+      <div class="sh"><span class="st">Monatsverlauf</span><div class="sl"></div></div>
+      <div class="chart-bars" id="barChart"></div>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <span style="display:flex;align-items:center;gap:4px;font-size:.68rem;color:var(--muted)"><span style="width:7px;height:7px;background:var(--sage);border-radius:2px;display:inline-block"></span>Einnahmen</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:.68rem;color:var(--muted)"><span style="width:7px;height:7px;background:var(--terra);border-radius:2px;display:inline-block"></span>Ausgaben</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sh"><span class="st">KU-Grenze 2025</span><div class="sl"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px"><span id="kuTxt" style="color:var(--muted)">0 € / 25.000 €</span><span id="kuPrz" style="font-weight:700;color:var(--brown)">0 %</span></div>
+      <div class="prog"><div class="pf" id="kuBar" style="width:0%;background:var(--sage)"></div></div>
+      <div style="font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6" id="kuHint"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Letzte Buchungen</span><div class="sl"></div><button class="btn bg bs" onclick="showTab('buchungen',document.querySelectorAll('.ni')[2])">Alle →</button></div>
+    <div class="tw-wrap"><table><thead><tr><th>Datum</th><th>Beschreibung</th><th>SKR 03</th><th>Konto</th><th>Steuer</th><th class="tr">Betrag</th></tr></thead><tbody id="lastB"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ ERFASSEN ══ -->
+<div id="tab-erfassen" class="tab-content">
+  <div class="card" style="max-width:720px">
+    <div class="sh"><span class="st">Neue Buchung</span><div class="sl"></div></div>
+    <div class="fr">
+      <div class="fg" style="max-width:145px"><label>Typ</label><select id="bTyp" onchange="updKat()"><option value="einnahme">Einnahme</option><option value="ausgabe">Ausgabe</option></select></div>
+      <div class="fg" style="max-width:160px"><label>Datum</label><input type="date" id="bDat"></div>
+      <div class="fg" style="max-width:145px"><label>Betrag (€)</label><input type="number" id="bBet" placeholder="0.00" step="0.01" min="0"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Beschreibung</label><input type="text" id="bDes" placeholder="z. B. Coaching-Session"></div>
+      <div class="fg" style="min-width:170px"><label>Kategorie</label><select id="bKat" onchange="updSKR()"></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Konto</label><select id="bKon"><option>Sparkasse</option><option>PayPal</option><option>Kontist</option><option>Barzahlung</option></select></div>
+      <div class="fg"><label>SKR 03 Konto</label><select id="bSKR"></select></div>
+      <div class="fg"><label>Steuer</label><select id="bSt"><option value="ku">§19 KU</option><option value="rc">Reverse Charge</option><option value="frei">Steuerfrei</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Notiz / Rechnungs-Nr.</label><input type="text" id="bNot" placeholder="optional"></div>
+    </div>
+    <button class="btn bp" onclick="saveB()">Buchung speichern</button>
+  </div>
+  <div class="card" style="max-width:720px">
+    <div class="sh"><span class="st">Schnell-Buchungen</span><div class="sl"></div><button class="btn bg bs" onclick="showTab('schnell',document.querySelectorAll('.ni')[7])">Bearbeiten →</button></div>
+    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:4px" id="schnellBtnArea">
+      <span style="color:var(--muted);font-size:.8rem">Noch keine Schnell-Buchungen — klick auf Bearbeiten um eigene anzulegen.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BUCHUNGEN ══ -->
+<div id="tab-buchungen" class="tab-content">
+  <div class="card">
+    <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end">
+      <div class="fg" style="min-width:130px"><label>Suche</label><input type="text" id="fS" placeholder="Stichwort …" oninput="renderTable()"></div>
+      <div class="fg" style="max-width:125px"><label>Typ</label><select id="fT" onchange="renderTable()"><option value="">Alle</option><option value="einnahme">Einnahmen</option><option value="ausgabe">Ausgaben</option></select></div>
+      <div class="fg" style="max-width:130px"><label>Konto</label><select id="fK" onchange="renderTable()"><option value="">Alle</option><option>Sparkasse</option><option>PayPal</option><option>Kontist</option><option>Barzahlung</option><option>Etsy</option></select></div>
+      <div class="fg" style="max-width:120px"><label>Monat</label><select id="fM" onchange="renderTable()"><option value="">Alle</option><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mär</option><option value="3">Apr</option><option value="4">Mai</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Okt</option><option value="10">Nov</option><option value="11">Dez</option></select></div>
+      <div class="fg" style="max-width:130px"><label>SKR-Konto</label><select id="fSKR" onchange="renderTable()"><option value="">Alle</option></select></div>
+    </div>
+    <div class="tw-wrap">
+      <table><thead><tr><th>Datum</th><th></th><th>Beschreibung</th><th>Kategorie</th><th>SKR 03</th><th>Konto</th><th>Steuer</th><th class="tr">Betrag</th><th></th></tr></thead>
+      <tbody id="buchT"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ETSY IMPORT ══ -->
+<div id="tab-etsy" class="tab-content">
+  <div class="notice bl">
+    <strong>Etsy & Steuern — kurz erklärt:</strong><br>
+    <strong>Digitale Produkte:</strong> Etsy überweist die USt direkt ans Käuferland (Marketplace Facilitator) — das ist nicht deine Steuerpflicht.<br>
+    <strong>Etsy-Gebühren</strong> (Listing, Transaction, Payment) kommen aus Irland → Reverse Charge §13b. Als Kleinunternehmerin: keine Abfuhr, nur kennzeichnen.<br>
+    <strong>Auszahlungen:</strong> Das ist dein Netto-Umsatz — deine echte Einnahme → SKR 03 Konto 8000.
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Etsy CSV importieren</span><div class="sl"></div></div>
+    <div class="notice">Shop-Manager → Finanzen → Zahlungen → "Herunterladen" (CSV). Alle Transaktionen werden automatisch erkannt und den richtigen SKR-03-Konten zugeordnet.</div>
+    <div class="fr" style="max-width:360px;align-items:flex-end">
+      <div class="fg"><label>Etsy CSV-Datei</label><input type="file" id="etsyF" accept=".csv" onchange="etsyImport()"></div>
+    </div>
+    <div id="etsyPrev"></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="sh"><span class="st">Etsy Einnahmen</span><div class="sl"></div></div><div id="etsyEin"><span style="color:var(--muted);font-size:.8rem">Noch keine Etsy-Daten</span></div></div>
+    <div class="card"><div class="sh"><span class="st">Etsy Gebühren</span><div class="sl"></div></div><div id="etsyGeb"><span style="color:var(--muted);font-size:.8rem">Noch keine Etsy-Daten</span></div></div>
+  </div>
+</div>
+
+<!-- ══ BANK IMPORT ══ -->
+<div id="tab-bankimport" class="tab-content">
+  <div class="card">
+    <div class="sh"><span class="st">Bank-CSV importieren</span><div class="sl"></div></div>
+    <div class="notice">Lade bei Sparkasse, PayPal oder Kontist den Kontoauszug als CSV herunter. Das Programm erkennt Buchungsart automatisch anhand von Schlüsselwörtern und weist SKR-03-Konten zu — z. B. "DHL / Porto" → 4120, "Gebühr / Entgelt" → 4820.</div>
+    <div class="fr" style="align-items:flex-end">
+      <div class="fg" style="max-width:160px"><label>Konto dieser Datei</label><select id="csvK"><option>Sparkasse</option><option>PayPal</option><option>Kontist</option><option>Barzahlung</option></select></div>
+      <div class="fg"><label>CSV-Datei</label><input type="file" id="csvF" accept=".csv" onchange="csvImport()"></div>
+    </div>
+    <div id="csvPrev"></div>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Erkennungs-Regeln (automatisch)</span><div class="sl"></div></div>
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px">Diese Schlüsselwörter werden beim Import automatisch erkannt:</div>
+    <div class="tw-wrap"><table><thead><tr><th>Schlüsselwörter im Verwendungszweck</th><th>SKR 03</th><th>Kategorie</th><th>Typ</th></tr></thead>
+    <tbody id="regelT"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ STEUERN ══ -->
+<div id="tab-steuern" class="tab-content">
+  <div class="g4" style="margin-bottom:14px">
+    <div class="kpi"><div class="kpi-l">Gewinn (EÜR)</div><div class="kpi-v" id="stG">0,00 €</div><div class="kpi-s">Basis Einkommensteuer</div></div>
+    <div class="kpi" style="border-color:#f5c5a3;background:#fff5f0"><div class="kpi-l">Gesamtrücklagen</div><div class="kpi-v w" id="stR">0,00 €</div><div class="kpi-s">alle Töpfe zusammen</div></div>
+    <div class="kpi" style="border-color:#b8e0b8;background:#f0f7f0"><div class="kpi-l">Frei verfügbar</div><div class="kpi-v g" id="stFrei">0,00 €</div><div class="kpi-s">nach allen Rücklagen</div></div>
+    <div class="kpi" style="border-color:#c5d7fc;background:#f0f4ff"><div class="kpi-l">Reverse-Charge</div><div class="kpi-v" style="color:#2d5ab8" id="stRC">0,00 €</div><div class="kpi-s">Als KU: keine Abfuhr</div></div>
+  </div>
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card">
+      <div class="sh"><span class="st">Rücklagen-Töpfe</span><div class="sl"></div><button class="btn bg bs" onclick="addRueckl()">+ Topf hinzufügen</button></div>
+      <div class="notice" style="margin-bottom:12px">Lege fest wie viel % deines Gewinns du zurücklegst. Wird automatisch aus dem aktuellen Jahresgewinn berechnet.</div>
+      <div id="ruecklRechner"></div>
+      <div style="margin-top:14px;padding-top:12px;border-top:2px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:.8rem;font-weight:700;color:var(--brown)">Summe Rücklagen</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:#c5a063" id="ruecklSumme">0,00 €</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:.8rem;font-weight:700;color:var(--brown)">Frei verfügbar</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--sage)" id="ruecklFrei">0,00 €</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sh"><span class="st">Einkommensteuer-Schätzung 2025</span><div class="sl"></div></div>
+      <div class="notice bl" style="margin-bottom:12px">Schätzung nach §32a EStG 2025 — kein Ersatz für den Steuerberater, aber zeigt dir die Größenordnung.</div>
+      <div id="estBlock"></div>
+      <div class="ins inf" style="margin-top:12px"><div class="ins-ico">§</div><div><div class="ins-t">Reverse Charge §13b</div><div class="ins-x">Software aus EU-Ausland (Canva, Claude, Adobe) → RC. Als KU befreit — trotzdem kennzeichnen.</div></div></div>
+      <div class="ins tip"><div class="ins-ico">→</div><div><div class="ins-t">Steuer-Kalender</div><div class="ins-x">31. Juli ohne StB · 28. Feb. Folgejahr mit StB · Vorauszahlungen: März, Juni, Sept., Dez.</div></div></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="sh"><span class="st">Quartals-Übersicht</span><div class="sl"></div></div>
+      <table><thead><tr><th>Quartal</th><th class="tr">Gewinn</th><th class="tr">Rücklagen</th><th class="tr">Frei</th></tr></thead><tbody id="qStT"></tbody></table>
+    </div>
+    <div class="card">
+      <div class="sh"><span class="st">Reverse-Charge-Buchungen</span><div class="sl"></div></div>
+      <div id="rcL"><span style="color:var(--muted);font-size:.8rem">Keine RC-Buchungen</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SKR 03 ══ -->
+<div id="tab-skr" class="tab-content">
+  <div class="notice bl">
+    <strong>SKR 03</strong> ist der Standardkontenrahmen für Freiberufler und Kleinunternehmer mit Einnahmen-Überschuss-Rechnung in Deutschland. Jede Buchung bekommt eine Kontonummer — so kann dein Steuerberater die EÜR direkt übernehmen.
+  </div>
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card">
+      <div class="sh"><span class="st">Einnahmen-Konten</span><div class="sl"></div></div>
+      <div id="skrEin"></div>
+    </div>
+    <div class="card">
+      <div class="sh"><span class="st">Ausgaben-Konten</span><div class="sl"></div></div>
+      <div id="skrAus"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">SKR 03 Referenz-Tabelle</span><div class="sl"></div></div>
+    <div class="tw-wrap"><table><thead><tr><th>Konto</th><th>Bezeichnung</th><th>Typ</th><th>Deine Kategorie</th></tr></thead>
+    <tbody id="skrRefT"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ AUSWERTUNG ══ -->
+<div id="tab-auswertung" class="tab-content">
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card"><div class="sh"><span class="st">EÜR</span><div class="sl"></div></div><div id="euerB"></div></div>
+    <div class="card"><div class="sh"><span class="st">Quartale</span><div class="sl"></div></div>
+      <table><thead><tr><th>Q</th><th class="tr">Einnahmen</th><th class="tr">Ausgaben</th><th class="tr">Gewinn</th></tr></thead><tbody id="qT"></tbody></table>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="sh"><span class="st">Konten-Saldo</span><div class="sl"></div></div><div id="konR"></div></div>
+    <div class="card"><div class="sh"><span class="st">Ausgaben-Kategorien</span><div class="sl"></div></div><div id="katR"></div></div>
+  </div>
+</div>
+
+<!-- ══ SCHNELL-BUCHUNGEN EDITOR ══ -->
+<!-- ══ RECHNUNGEN ══ -->
+<div id="tab-rechnung" class="tab-content">
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card">
+      <div class="sh"><span class="st">Neue Rechnung</span><div class="sl"></div></div>
+      <div class="fr">
+        <div class="fg"><label>Rechnungs-Nr.</label><input type="text" id="rNr" placeholder="z. B. 2025-001"></div>
+        <div class="fg" style="max-width:155px"><label>Datum</label><input type="date" id="rDat"></div>
+        <div class="fg" style="max-width:155px"><label>Fällig am</label><input type="date" id="rFäl"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Kunde / Empfänger</label><input type="text" id="rKunde" placeholder="Name, Firma"></div>
+        <div class="fg"><label>Adresse</label><input type="text" id="rAdresse" placeholder="Straße, PLZ Ort"></div>
+      </div>
+      <div id="rPositionen">
+        <div class="sh" style="margin-bottom:8px"><span style="font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Positionen</span><div class="sl"></div><button class="btn bg bs" onclick="addRPos()">+ Position</button></div>
+        <div id="rPosListe"></div>
+      </div>
+      <div style="margin-top:10px;padding:10px 14px;background:var(--sand);border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:.8rem;font-weight:700;color:var(--brown)">Gesamtbetrag</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--brown)" id="rGesamt">0,00 €</span>
+      </div>
+      <div class="fr" style="margin-top:12px">
+        <div class="fg"><label>Zahlungshinweis</label><input type="text" id="rZahlhinweis" value="Bitte überweisen Sie den Betrag innerhalb von 14 Tagen."></div>
+      </div>
+      <div style="display:flex;gap:9px;margin-top:4px;flex-wrap:wrap">
+        <button class="btn bp" onclick="rechnungSpeichern()">Rechnung speichern</button>
+        <button class="btn bo" onclick="rechnungDrucken()">Drucken / PDF</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sh"><span class="st">Absender-Daten</span><div class="sl"></div></div>
+      <div class="notice" style="margin-bottom:12px">Einmalig ausfüllen — wird auf allen Rechnungen verwendet.</div>
+      <div class="fr"><div class="fg"><label>Dein Name</label><input type="text" id="absName" placeholder="Nadine Kernig / Fühlkraft" oninput="saveAbs()"></div></div>
+      <div class="fr"><div class="fg"><label>Adresse</label><input type="text" id="absAdr" placeholder="Straße, PLZ Ort" oninput="saveAbs()"></div></div>
+      <div class="fr">
+        <div class="fg"><label>E-Mail</label><input type="text" id="absEmail" placeholder="info@fuehlkraft.de" oninput="saveAbs()"></div>
+        <div class="fg"><label>Website</label><input type="text" id="absWeb" placeholder="www.fuehlkraft.de" oninput="saveAbs()"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Bank / IBAN</label><input type="text" id="absIBAN" placeholder="DE00 0000 0000 0000 0000 00" oninput="saveAbs()"></div>
+        <div class="fg"><label>Steuernummer</label><input type="text" id="absStNr" placeholder="123/456/78900" oninput="saveAbs()"></div>
+      </div>
+      <div class="ins ok" style="margin-top:4px"><div class="ins-ico">§</div><div><div class="ins-t">§19-Hinweis automatisch</div><div class="ins-x">Jede Rechnung enthält automatisch: „Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen."</div></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Gespeicherte Rechnungen</span><div class="sl"></div></div>
+    <div class="tw-wrap"><table><thead><tr><th>Nr.</th><th>Datum</th><th>Kunde</th><th>Fällig</th><th>Status</th><th class="tr">Betrag</th><th></th></tr></thead>
+    <tbody id="rListe"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ OFFENE POSTEN ══ -->
+<div id="tab-oposten" class="tab-content">
+  <div class="g3" style="margin-bottom:14px">
+    <div class="kpi"><div class="kpi-l">Offen gesamt</div><div class="kpi-v r" id="opOffen">0,00 €</div><div class="kpi-s">unbezahlte Rechnungen</div></div>
+    <div class="kpi" style="border-color:#f5c5a3;background:#fff5f0"><div class="kpi-l">Überfällig</div><div class="kpi-v r" id="opÜberfällig">0,00 €</div><div class="kpi-s">Fälligkeit überschritten</div></div>
+    <div class="kpi" style="border-color:#b8e0b8;background:#f0f7f0"><div class="kpi-l">Bezahlt (gesamt)</div><div class="kpi-v g" id="opBezahlt">0,00 €</div><div class="kpi-s">dieses Jahr</div></div>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Alle offenen Rechnungen</span><div class="sl"></div></div>
+    <div class="tw-wrap"><table><thead><tr><th>Nr.</th><th>Kunde</th><th>Rechnungsdatum</th><th>Fällig am</th><th>Tage offen</th><th class="tr">Betrag</th><th></th></tr></thead>
+    <tbody id="opListe"></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Bezahlte Rechnungen</span><div class="sl"></div></div>
+    <div class="tw-wrap"><table><thead><tr><th>Nr.</th><th>Kunde</th><th>Bezahlt am</th><th class="tr">Betrag</th></tr></thead>
+    <tbody id="opBezahltListe"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ WIEDERKEHREND ══ -->
+<div id="tab-wiederk" class="tab-content">
+  <div class="card" style="margin-bottom:14px">
+    <div class="sh"><span class="st">Neue wiederkehrende Buchung</span><div class="sl"></div></div>
+    <div class="notice" style="margin-bottom:12px">Einmal anlegen — beim nächsten Öffnen des Programms werden fällige Buchungen automatisch eingetragen.</div>
+    <div class="fr">
+      <div class="fg" style="max-width:145px"><label>Typ</label><select id="wTyp" onchange="updWKat()"><option value="ausgabe">Ausgabe</option><option value="einnahme">Einnahme</option></select></div>
+      <div class="fg"><label>Beschreibung</label><input type="text" id="wDesc" placeholder="z. B. Stallmiete"></div>
+      <div class="fg" style="max-width:135px"><label>Betrag (€)</label><input type="number" id="wBet" placeholder="0.00" step="0.01"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Kategorie</label><select id="wKat"></select></div>
+      <div class="fg"><label>Konto</label><select id="wKon"><option>Sparkasse</option><option>PayPal</option><option>Kontist</option><option>Barzahlung</option></select></div>
+      <div class="fg" style="max-width:145px"><label>Intervall</label>
+        <select id="wInt"><option value="monatlich">Monatlich</option><option value="quartalsweise">Quartalsweise</option><option value="jährlich">Jährlich</option><option value="wöchentlich">Wöchentlich</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg" style="max-width:160px"><label>Erste Fälligkeit</label><input type="date" id="wStart"></div>
+      <div class="fg" style="max-width:145px"><label>Steuer</label><select id="wSt"><option value="ku">§19 KU</option><option value="rc">Reverse Charge</option></select></div>
+      <div class="fg"><label>Notiz</label><input type="text" id="wNot" placeholder="optional"></div>
+    </div>
+    <button class="btn bp" onclick="saveWiederk()">Speichern</button>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Aktive wiederkehrende Buchungen</span><div class="sl"></div></div>
+    <div id="wiederkListe"><span style="color:var(--muted);font-size:.8rem">Noch keine wiederkehrenden Buchungen</span></div>
+  </div>
+</div>
+
+<div id="tab-schnell" class="tab-content">
+  <div class="card" style="margin-bottom:14px">
+    <div class="sh"><span class="st">Schnell-Buchung erstellen</span><div class="sl"></div></div>
+    <div class="notice">Erstelle eigene Schnell-Buchungen für deine häufigsten Positionen. Sie erscheinen dann als Button im Erfassen-Tab.</div>
+    <div class="fr">
+      <div class="fg" style="max-width:140px"><label>Typ</label><select id="snTyp"><option value="einnahme">Einnahme</option><option value="ausgabe">Ausgabe</option></select></div>
+      <div class="fg"><label>Name (Button-Beschriftung)</label><input type="text" id="snName" placeholder="z. B. Stallmiete Januar"></div>
+      <div class="fg" style="max-width:130px"><label>Betrag (0 = Eingabe)</label><input type="number" id="snBet" placeholder="0.00" step="0.01"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Kategorie</label><select id="snKat"></select></div>
+      <div class="fg"><label>Konto</label><select id="snKon"><option>Sparkasse</option><option>PayPal</option><option>Kontist</option><option>Barzahlung</option></select></div>
+      <div class="fg"><label>Steuer</label><select id="snSt"><option value="ku">§19 KU</option><option value="rc">Reverse Charge</option></select></div>
+    </div>
+    <button class="btn bp" onclick="addSchnell()">Schnell-Buchung speichern</button>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Meine Schnell-Buchungen</span><div class="sl"></div></div>
+    <div id="schnellListe"><span style="color:var(--muted);font-size:.8rem">Noch keine eigenen Schnell-Buchungen</span></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="sh"><span class="st">Belege & Rechnungen anhängen</span><div class="sl"></div></div>
+    <div class="notice">Wähle eine Buchung aus und hänge den Beleg als Bild oder PDF an. Alles wird lokal in deinem Browser gespeichert.</div>
+    <div class="fr" style="align-items:flex-end">
+      <div class="fg"><label>Buchung suchen</label><input type="text" id="belegSuche" placeholder="Stichwort …" oninput="renderBelegListe()"></div>
+    </div>
+    <div id="belegListe" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- ══ EXPORT ══ -->
+<div id="tab-export" class="tab-content">
+  <div class="notice"><strong>Kleinunternehmerin §19 UStG</strong> — EÜR · Anlage EÜR · keine USt-Voranmeldung.</div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="sh"><span class="st">Jahresabschluss <span id="expY"></span></span><div class="sl"></div></div>
+    <div id="expE"></div>
+    <div style="margin-top:18px;display:flex;gap:9px;flex-wrap:wrap">
+      <button class="btn bp" onclick="doCSV()">CSV exportieren</button>
+      <button class="btn bo" onclick="window.print()">Drucken / PDF</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Rechnungs-Checkliste</span><div class="sl"></div></div>
+    <div style="display:flex;flex-direction:column;gap:9px;margin-top:4px">
+      <label style="display:flex;gap:9px;align-items:center;cursor:pointer;font-size:.83rem;font-weight:300"><input type="checkbox" style="width:auto;accent-color:var(--terra)"> Vollständiger Name & Anschrift (Absender)</label>
+      <label style="display:flex;gap:9px;align-items:center;cursor:pointer;font-size:.83rem;font-weight:300"><input type="checkbox" style="width:auto;accent-color:var(--terra)"> Name & Anschrift des Leistungsempfängers</label>
+      <label style="display:flex;gap:9px;align-items:center;cursor:pointer;font-size:.83rem;font-weight:300"><input type="checkbox" style="width:auto;accent-color:var(--terra)"> Rechnungsdatum & fortlaufende Nummer</label>
+      <label style="display:flex;gap:9px;align-items:center;cursor:pointer;font-size:.83rem;font-weight:300"><input type="checkbox" style="width:auto;accent-color:var(--terra)"> Art und Menge der Leistung</label>
+      <label style="display:flex;gap:9px;align-items:center;cursor:pointer;font-size:.83rem;font-weight:300"><input type="checkbox" style="width:auto;accent-color:var(--terra)"> Netto-Betrag</label>
+      <label style="display:flex;gap:9px;align-items:center;cursor:pointer;font-size:.83rem;font-weight:300"><input type="checkbox" style="width:auto;accent-color:var(--terra)"> §19-Hinweis: „Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen."</label>
+      <label style="display:flex;gap:9px;align-items:center;cursor:pointer;font-size:.83rem;font-weight:300"><input type="checkbox" style="width:auto;accent-color:var(--terra)"> Bankverbindung & Zahlungsfrist</label>
+    </div>
+  </div>
+
+  <!-- DATENSICHERUNG -->
+  <div class="card" style="margin-top:14px;border-color:#b8e0b8;background:#f9fdf9">
+    <div class="sh"><span class="st">Datensicherung</span><div class="sl"></div></div>
+    <div class="notice ok" style="margin-bottom:14px"><strong>Wichtig:</strong> Alle Buchungen sind im Browser gespeichert. Wenn du den Cache leerst, sind sie weg. Sichere regelmäßig — auf USB-Stick oder in einen Ordner.</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn bp" onclick="exportDaten()">💾 Alle Daten sichern (.json)</button>
+      <button class="btn bo" onclick="document.getElementById('importInput').click()">📂 Daten wiederherstellen</button>
+      <input type="file" id="importInput" accept=".json" style="display:none" onchange="importDaten(this)">
+    </div>
+    <div style="margin-top:12px;font-size:.76rem;color:var(--muted);line-height:1.7">
+      <strong style="color:var(--brown)">USB-Stick:</strong> Speichere die HTML-Datei und die JSON-Sicherung zusammen auf dem Stick. So hast du Programm + Daten immer dabei und kannst es auf jedem PC in Chrome öffnen.
+    </div>
+    <div style="margin-top:10px;padding:10px 14px;background:var(--sand);border-radius:8px;font-size:.78rem">
+      Letzte Sicherung: <span id="letzteBackup" style="font-weight:400;color:var(--brown)">noch keine</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════
+// SKR 03 KONTENRAHMEN
+// ══════════════════════════════════
+const SKR = {
+  // ── EINNAHMEN ──
+  '8000':{ name:'Umsatzerlöse (Dienstleistungen)', typ:'einnahme', kat:'Coaching', gruppe:'Betriebseinnahmen' },
+  '8100':{ name:'Etsy / Online-Marktplatz Umsätze', typ:'einnahme', kat:'Etsy-Verkauf', gruppe:'Betriebseinnahmen' },
+  '8200':{ name:'Erlöse aus Warenverkauf', typ:'einnahme', kat:'Warenverkauf', gruppe:'Betriebseinnahmen' },
+  '8400':{ name:'Erlöse digitale Produkte', typ:'einnahme', kat:'Digitale Produkte', gruppe:'Betriebseinnahmen' },
+  '8500':{ name:'Provisionen & Vermittlungserlöse', typ:'einnahme', kat:'Sonstige Einnahmen', gruppe:'Betriebseinnahmen' },
+  '8600':{ name:'Zinserträge', typ:'einnahme', kat:'Sonstige Einnahmen', gruppe:'Sonstige Erträge' },
+  '8900':{ name:'Sonstige betriebliche Erträge', typ:'einnahme', kat:'Sonstige Einnahmen', gruppe:'Sonstige Erträge' },
+  // ── WARENEINKAUF ──
+  '3200':{ name:'Wareneinkauf (Handelswaren)', typ:'ausgabe', kat:'Wareneinkauf', gruppe:'Wareneinkauf' },
+  '3300':{ name:'Bezogene Leistungen', typ:'ausgabe', kat:'Wareneinkauf', gruppe:'Wareneinkauf' },
+  '3400':{ name:'Verpackungsmaterial / Hilfsstoffe', typ:'ausgabe', kat:'Wareneinkauf', gruppe:'Wareneinkauf' },
+  '3500':{ name:'Versandmaterial / Versandkosten Einkauf', typ:'ausgabe', kat:'Wareneinkauf', gruppe:'Wareneinkauf' },
+  // ── PERSONAL ──
+  '4100':{ name:'Löhne & Gehälter', typ:'ausgabe', kat:'Personal', gruppe:'Personalkosten' },
+  '4110':{ name:'Sozialversicherungsbeiträge', typ:'ausgabe', kat:'Personal', gruppe:'Personalkosten' },
+  // ── RAUMKOSTEN ──
+  '4210':{ name:'Miete / Pacht (Stall, Büro)', typ:'ausgabe', kat:'Raumkosten', gruppe:'Raumkosten' },
+  '4230':{ name:'Heizung / Energie', typ:'ausgabe', kat:'Raumkosten', gruppe:'Raumkosten' },
+  '4240':{ name:'Reinigung / Pflege', typ:'ausgabe', kat:'Raumkosten', gruppe:'Raumkosten' },
+  // ── FAHRZEUG ──
+  '4530':{ name:'Kfz-Kosten / Fahrtkosten', typ:'ausgabe', kat:'Fahrtkosten', gruppe:'Fahrzeugkosten' },
+  '4540':{ name:'Reisekosten / Übernachtung', typ:'ausgabe', kat:'Fahrtkosten', gruppe:'Fahrzeugkosten' },
+  // ── MARKETING ──
+  '4600':{ name:'Werbekosten allgemein', typ:'ausgabe', kat:'Marketing & Werbung', gruppe:'Werbekosten' },
+  '4610':{ name:'Online-Werbung (Google, Meta Ads)', typ:'ausgabe', kat:'Marketing & Werbung', gruppe:'Werbekosten' },
+  '4620':{ name:'Etsy-Gebühren (Listing, Transaction)', typ:'ausgabe', kat:'Marketing & Werbung', gruppe:'Werbekosten' },
+  '4630':{ name:'Druckkosten / Flyer / Visitenkarten', typ:'ausgabe', kat:'Marketing & Werbung', gruppe:'Werbekosten' },
+  // ── VERSICHERUNGEN ──
+  '4360':{ name:'Betriebliche Versicherungen', typ:'ausgabe', kat:'Versicherungen', gruppe:'Versicherungen' },
+  '4368':{ name:'Haftpflichtversicherung', typ:'ausgabe', kat:'Versicherungen', gruppe:'Versicherungen' },
+  // ── BÜRO ──
+  '4710':{ name:'Bürobedarf / Schreibwaren', typ:'ausgabe', kat:'Büro & Verwaltung', gruppe:'Bürokosten' },
+  '4720':{ name:'Zeitschriften / Fachliteratur', typ:'ausgabe', kat:'Büro & Verwaltung', gruppe:'Bürokosten' },
+  '4730':{ name:'Buchführungskosten / Steuerberater', typ:'ausgabe', kat:'Steuerberater', gruppe:'Bürokosten' },
+  '4740':{ name:'Rechts- & Beratungskosten', typ:'ausgabe', kat:'Steuerberater', gruppe:'Bürokosten' },
+  // ── KOMMUNIKATION ──
+  '4810':{ name:'Telefon & Mobilfunk', typ:'ausgabe', kat:'Telefon & Internet', gruppe:'Kommunikation' },
+  '4820':{ name:'Internet & DSL', typ:'ausgabe', kat:'Telefon & Internet', gruppe:'Kommunikation' },
+  // ── PORTO & VERSAND ──
+  '4830':{ name:'Porto & Briefmarken', typ:'ausgabe', kat:'Porto & Versand', gruppe:'Porto & Versand' },
+  '4840':{ name:'Paketversand (DHL, Hermes, UPS)', typ:'ausgabe', kat:'Porto & Versand', gruppe:'Porto & Versand' },
+  '4850':{ name:'Verpackungsmaterial', typ:'ausgabe', kat:'Porto & Versand', gruppe:'Porto & Versand' },
+  // ── FORTBILDUNG ──
+  '4900':{ name:'Fortbildung / Seminare', typ:'ausgabe', kat:'Fortbildung', gruppe:'Fortbildung' },
+  '4910':{ name:'Fachmessen / Kongresse', typ:'ausgabe', kat:'Fortbildung', gruppe:'Fortbildung' },
+  // ── SOFTWARE & TOOLS ──
+  '4920':{ name:'Software-Lizenzen (inland)', typ:'ausgabe', kat:'Software & Tools', gruppe:'Software & Tools' },
+  '4925':{ name:'Software / SaaS (Ausland, RC)', typ:'ausgabe', kat:'Software & Tools', gruppe:'Software & Tools' },
+  '4930':{ name:'Hardware / Geräte (GWG bis 800€)', typ:'ausgabe', kat:'Software & Tools', gruppe:'Software & Tools' },
+  // ── BANK & SONSTIGES ──
+  '4970':{ name:'Bankgebühren & Kontoführung', typ:'ausgabe', kat:'Bankgebühren', gruppe:'Sonstiges' },
+  '4975':{ name:'PayPal-Gebühren', typ:'ausgabe', kat:'Bankgebühren', gruppe:'Sonstiges' },
+  '4980':{ name:'Sonstige Betriebsausgaben', typ:'ausgabe', kat:'Sonstiges', gruppe:'Sonstiges' },
+  // ── PFERDE & STALL ──
+  '4990':{ name:'Tierarztkosten', typ:'ausgabe', kat:'Pferde & Stall', gruppe:'Pferde & Stall' },
+  '4991':{ name:'Futter & Einstreu', typ:'ausgabe', kat:'Pferde & Stall', gruppe:'Pferde & Stall' },
+  '4992':{ name:'Hufschmied / Hufpflege', typ:'ausgabe', kat:'Pferde & Stall', gruppe:'Pferde & Stall' },
+  '4993':{ name:'Stallmiete / Pensionskosten', typ:'ausgabe', kat:'Pferde & Stall', gruppe:'Pferde & Stall' },
+  '4994':{ name:'Ausrüstung / Zubehör Pferde', typ:'ausgabe', kat:'Pferde & Stall', gruppe:'Pferde & Stall' },
+};
+
+// Einnahmen-Kategorien → SKR
+const KAT_SKR_EIN = {
+  'Coaching':'8000','Gruppen-Session':'8000','Ausbildung':'8000',
+  'Digitale Produkte':'8400','Etsy-Verkauf':'8100','Warenverkauf':'8200',
+  'Vortrag / Workshop':'8000','Sonstige Einnahmen':'8900','Sonstiges':'8900'
+};
+const KAT_SKR_AUS = {
+  'Wareneinkauf':'3200','Porto & Versand':'4840','Raumkosten':'4210',
+  'Telefon & Internet':'4810','Marketing & Werbung':'4600','Fahrtkosten':'4530',
+  'Fortbildung':'4900','Büro & Verwaltung':'4710','Bankgebühren':'4970',
+  'Pferde & Stall':'4993','Steuerberater':'4730','Software & Tools':'4925',
+  'Versicherungen':'4360','Personal':'4100','Sonstiges':'4980'
+};
+
+// ══════════════════════════════════
+// BANK-ERKENNUNGSREGELN
+// ══════════════════════════════════
+const REGELN = [
+  { keys:['dhl','deutsche post','hermes','ups','dpd','fedex','porto','versand','paketmarke'], skr:'4120', kat:'Porto & Versand', typ:'ausgabe', label:'DHL / Post / Versand' },
+  { keys:['verpackung','karton','bubble','packmat'], skr:'4985', kat:'Porto & Versand', typ:'ausgabe', label:'Verpackungsmaterial' },
+  { keys:['gebühr','entgelt','kontoführung','jahresbeitrag','bankentgelt'], skr:'4820', kat:'Bankgebühren', typ:'ausgabe', label:'Bankgebühren' },
+  { keys:['canva','adobe','figma','notion','claude','anthropic','make.com','zapier','spotify business'], skr:'4980', kat:'Software & Tools', typ:'ausgabe', label:'Software & Tools (RC)' },
+  { keys:['google ads','facebook ads','instagram ads','meta ads','werbung'], skr:'4200', kat:'Marketing & Werbung', typ:'ausgabe', label:'Werbung' },
+  { keys:['telefon','internet','mobilfunk','telekom','vodafone','o2','1und1'], skr:'4130', kat:'Telefon & Internet', typ:'ausgabe', label:'Telefon & Internet' },
+  { keys:['fahrt','tankstelle','bahn','bahnticket','taxi','uber','parken'], skr:'4530', kat:'Fahrtkosten', typ:'ausgabe', label:'Fahrtkosten' },
+  { keys:['fortbildung','seminar','kurs','workshop','coaching zertifikat'], skr:'4660', kat:'Fortbildung', typ:'ausgabe', label:'Fortbildung' },
+  { keys:['steuerberater','steuerbüro','rechtsanwalt','notar'], skr:'4920', kat:'Steuerberater', typ:'ausgabe', label:'Steuerberater' },
+  { keys:['büro','druckerpapier','tinte','büromaterial','schreibwaren'], skr:'4800', kat:'Büro & Verwaltung', typ:'ausgabe', label:'Bürobedarf' },
+  { keys:['tierarzt','huf','hufschmied','heu','stroh','futter','stall','stallmiete'], skr:'4900', kat:'Pferde & Stall', typ:'ausgabe', label:'Pferde & Stall' },
+  { keys:['coaching einnahme','zahlung von','umsatz','payment received','gutschrift'], skr:'8000', kat:'Coaching', typ:'einnahme', label:'Coaching-Einnahme' },
+  { keys:['etsy'], skr:'8100', kat:'Etsy-Verkauf', typ:'einnahme', label:'Etsy-Einnahme' },
+];
+
+const KATEGORIEN = {
+  einnahme:['Coaching','Gruppen-Session','Ausbildung','Digitale Produkte','Etsy-Verkauf','Warenverkauf','Vortrag / Workshop','Sonstige Einnahmen','Sonstiges'],
+  ausgabe:['Wareneinkauf','Porto & Versand','Bankgebühren','Pferde & Stall','Raumkosten','Büro & Verwaltung','Marketing & Werbung','Software & Tools','Fortbildung','Fahrtkosten','Telefon & Internet','Versicherungen','Personal','Steuerberater','Sonstiges']
+};
+const MONATE=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let year=new Date().getFullYear(), data=[], etsy=[];
+
+function init(){
+  document.getElementById('bDat').value=today();
+  document.getElementById('expY').textContent=year;
+  document.getElementById('tbDate').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  updKat(); updSKR(); renderRegelT(); renderSKRRef();
+  load();
+  updateBackupHint();
+  loadAbs();
+  // Auto-set next invoice number
+  const nrEl=document.getElementById('rNr'); if(nrEl) nrEl.value=nextRNr();
+  // Set default dates for rechnung
+  const rDatEl=document.getElementById('rDat'); if(rDatEl) rDatEl.value=today();
+  const rFälEl=document.getElementById('rFäl'); if(rFälEl){const d=new Date();d.setDate(d.getDate()+14);rFälEl.value=d.toISOString().split('T')[0];}
+  const wStartEl=document.getElementById('wStart'); if(wStartEl) wStartEl.value=today();
+  // Check wiederkehrend on load
+  checkWiederkehrend();
+  // Initial render of rPositionen
+  renderRPos();
+}
+function today(){return new Date().toISOString().split('T')[0];}
+
+function load(){
+  data=JSON.parse(localStorage.getItem('fk4_'+year)||'[]');
+  etsy=JSON.parse(localStorage.getItem('fk4e_'+year)||'[]');
+  refresh();
+}
+function persist(){
+  localStorage.setItem('fk4_'+year,JSON.stringify(data));
+  localStorage.setItem('fk4e_'+year,JSON.stringify(etsy));
+}
+function switchYear(y){year=parseInt(y);document.getElementById('expY').textContent=year;load();}
+
+const TITLES={dashboard:'Übersicht',erfassen:'Buchung erfassen',buchungen:'Alle Buchungen',etsy:'Etsy-Import',bankimport:'Bank-Import & Zuordnung',steuern:'Steuern & Reserven',skr:'SKR 03 Kontenplan',auswertung:'Auswertung',rechnung:'Rechnungs-Generator',oposten:'Offene Posten',wiederk:'Wiederkehrende Buchungen',schnell:'Schnell-Buchungen & Belege',export:'Export & Steuer'};
+function showTab(id,el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  document.getElementById('tbTitle').textContent=TITLES[id]||'';
+  if(id==='buchungen')renderTable();
+  if(id==='auswertung')renderAuswertung();
+  if(id==='export')renderExport();
+  if(id==='steuern')renderSteuern();
+  if(id==='etsy')renderEtsy();
+  if(id==='skr')renderSKR();
+  if(id==='schnell'){renderSchnellListe();renderBelegListe();updSnKat();}
+  if(id==='rechnung'){renderRechnungListe();}
+  if(id==='oposten'){renderOffenePosten();}
+  if(id==='wiederk'){renderWiederkehrend();}
+}
+
+// ══════════════════════════════════
+// FORM HELPERS
+// ══════════════════════════════════
+function updKat(){
+  const t=document.getElementById('bTyp').value;
+  document.getElementById('bKat').innerHTML=KATEGORIEN[t].map(k=>`<option>${k}</option>`).join('');
+  updSKR();
+}
+function updSKR(){
+  const t=document.getElementById('bTyp').value;
+  const kat=document.getElementById('bKat').value;
+  const skrNum=t==='einnahme'?(KAT_SKR_EIN[kat]||'8000'):(KAT_SKR_AUS[kat]||'4900');
+  const opts=Object.entries(SKR).filter(([k,v])=>v.typ===t).map(([k,v])=>`<option value="${k}" ${k===skrNum?'selected':''}>${k} · ${v.name}</option>`).join('');
+  document.getElementById('bSKR').innerHTML=opts;
+}
+
+function fmt(n){return n.toLocaleString('de-DE',{style:'currency',currency:'EUR'});}
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function sum(arr,t){return arr.filter(b=>b.typ===t).reduce((s,b)=>s+b.betrag,0);}
+function skrBadge(s){return s?`<span class="skr">${s}</span>`:'';} 
+function taxBadge(s){
+  if(!s)return '';
+  const cls=s==='rc'||s.includes('rc')?'rc':s.includes('et')?'et':'ku';
+  const lbl={ku:'§19 KU',rc:'Reverse Charge',frei:'Steuerfrei',etsy_dep:'Etsy Einnahme',etsy_fee:'Etsy Gebühr',etsy_rc:'Etsy RC'}[s]||s;
+  return `<span class="tax-b ${cls}">${lbl}</span>`;
+}
+
+// ══════════════════════════════════
+// BUCHUNG SPEICHERN
+// ══════════════════════════════════
+function saveB(){
+  const b=parseFloat(document.getElementById('bBet').value);
+  const d=document.getElementById('bDat').value;
+  if(!b||b<=0){toast('Bitte Betrag eingeben');return;}
+  if(!d){toast('Bitte Datum wählen');return;}
+  data.push({id:Date.now(),typ:document.getElementById('bTyp').value,datum:d,betrag:b,
+    desc:document.getElementById('bDes').value||'–',kat:document.getElementById('bKat').value,
+    konto:document.getElementById('bKon').value,skr:document.getElementById('bSKR').value,
+    steuer:document.getElementById('bSt').value,notiz:document.getElementById('bNot').value});
+  data.sort((a,b)=>b.datum.localeCompare(a.datum));
+  persist();refresh();
+  ['bBet','bDes','bNot'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('bDat').value=today();
+  toast('✓ Gespeichert');
+}
+
+function qb(typ,desc,betrag,kat,konto,skr,steuer){
+  document.getElementById('bTyp').value=typ;updKat();
+  document.getElementById('bDes').value=desc;
+  if(betrag)document.getElementById('bBet').value=betrag;
+  document.getElementById('bKat').value=kat;updSKR();
+  document.getElementById('bKon').value=konto;
+  document.getElementById('bSKR').value=skr;
+  document.getElementById('bSt').value=steuer;
+  showTab('erfassen',document.querySelectorAll('.ni')[1]);
+  document.getElementById('bBet').focus();
+}
+
+function del(id,src){
+  if(!confirm('Buchung löschen?'))return;
+  if(src==='e')etsy=etsy.filter(b=>b.id!==id);else data=data.filter(b=>b.id!==id);
+  persist();refresh();
+  if(src==='e')renderEtsy();else renderTable();
+}
+
+// ══════════════════════════════════
+// SCHLÜSSELWORT-ERKENNUNG
+// ══════════════════════════════════
+function erkenne(text){
+  const t=text.toLowerCase();
+  for(const r of REGELN){
+    if(r.keys.some(k=>t.includes(k))) return r;
+  }
+  return null;
+}
+
+// ══════════════════════════════════
+// CSV BANK IMPORT
+// ══════════════════════════════════
+function csvImport(){
+  const file=document.getElementById('csvF').files[0];
+  const konto=document.getElementById('csvK').value;
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const raw=e.target.result;
+    const lines=raw.split('\n').filter(function(l){return l.trim();});
+    if(lines.length<2){document.getElementById('csvPrev').innerHTML='<div class="notice">Datei leer</div>';return;}
+
+    // Semikolon (Sparkasse) oder Komma
+    const sep=lines[0].includes(';')?';':',';
+    const hdr=lines[0].split(sep).map(function(h){return h.trim().replace(/^"|"$/g,'').toLowerCase();});
+
+    // Spalten-Indizes
+    const iDat =hdr.findIndex(function(h){return h.includes('buchungstag')||h==='datum'||h==='date'||h.includes('valuta');});
+    const iVerw=hdr.findIndex(function(h){return h.includes('verwendung')||h.includes('buchungstext')||h.includes('beschreibung');});
+    const iBet =hdr.findIndex(function(h){return h==='betrag'||h.includes('betrag')||h==='amount';});
+    const iBegu=hdr.findIndex(function(h){return h.includes('beguenstig')||h.includes('gl\u00e4ubig')||h.includes('empf\u00e4nger')||h.includes('name');});
+
+    // Fallback: Sparkasse-Standard — Buchungstag=1, Verwendungszweck=4, Betrag=15
+    const colD=iDat >=0?iDat :1;
+    const colV=iVerw>=0?iVerw:4;
+    const colB=iBet >=0?iBet :15;
+    const colG=iBegu>=0?iBegu:11;
+
+    const imported=[];
+    lines.slice(1).forEach(function(line,i){
+      const cols=line.split(sep).map(function(col){return col.trim().replace(/^"|"$/g,'');});
+      if(!cols||cols.length<3)return;
+
+      // Datum parsen DD.MM.YYYY
+      const rawD=(cols[colD]||'').trim();
+      let datum='';
+      const dm=rawD.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      if(dm) datum=dm[3]+'-'+dm[2]+'-'+dm[1];
+      else if(/^\d{4}-\d{2}-\d{2}/.test(rawD)) datum=rawD.slice(0,10);
+      if(!datum)return;
+
+      // Betrag: Sparkasse = Punkt als Tausender, Komma als Dezimal → "1.234,56"
+      const rawB=(cols[colB]||'').trim();
+      if(!rawB||rawB==='')return;
+      const betragStr=rawB.replace(/\./g,'').replace(',','.');
+      const betrag=parseFloat(betragStr);
+      if(isNaN(betrag))return;
+
+      // Verwendungszweck + Begünstigter für Erkennung
+      const verw=(cols[colV]||'').trim();
+      const begu=(cols[colG]||'').trim();
+      const suchText=(verw+' '+begu).toLowerCase();
+
+      const typ=betrag>=0?'einnahme':'ausgabe';
+      const regel=erkenne(suchText);
+      const skrNum=regel?regel.skr:(typ==='einnahme'?'8000':'4980');
+      const kat=regel?regel.kat:(typ==='einnahme'?'Coaching':'Sonstiges');
+      const steuer=regel&&(regel.skr==='4925'||regel.skr==='4980')?'rc':'ku';
+      const desc=(verw||begu||'Sparkasse').slice(0,60);
+
+      imported.push({id:Date.now()+i+Math.random(),typ,datum,betrag:Math.abs(betrag),
+        desc,kat,konto,skr:skrNum,steuer,notiz:'Sparkasse-Import'});
+    });
+
+    window._csv=imported;
+    const prev=document.getElementById('csvPrev');
+
+    if(!imported.length){
+      prev.innerHTML='<div class="notice">Keine Buchungen erkannt.<br>Spalten erkannt: '+hdr.slice(0,6).join(' | ')+'<br>Trennzeichen: '+(sep===';'?'Semikolon':'Komma')+' · Datumsspalte: '+colD+' · Betragsspalte: '+colB+'</div>';
+      return;
+    }
+
+    const einS=imported.filter(function(b){return b.typ==='einnahme';}).reduce(function(s,b){return s+b.betrag;},0);
+    const ausS=imported.filter(function(b){return b.typ==='ausgabe';}).reduce(function(s,b){return s+b.betrag;},0);
+    const rcCount=imported.filter(function(b){return b.steuer==='rc';}).length;
+
+    var rows=imported.slice(0,15).map(function(b){
+      return '<tr>'
+        +'<td style="color:var(--muted);white-space:nowrap">'+new Date(b.datum).toLocaleDateString('de-DE')+'</td>'
+        +'<td style="font-size:.78rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+b.desc+'</td>'
+        +'<td>'+skrBadge(b.skr)+'</td>'
+        +'<td style="font-size:.76rem;color:var(--muted)">'+b.kat+'</td>'
+        +'<td>'+taxBadge(b.steuer)+'</td>'
+        +'<td class="tr '+(b.typ==='einnahme'?'tg':'tr2')+'">'+(b.typ==='einnahme'?'+':'-')+fmt(b.betrag)+'</td>'
+        +'</tr>';
+    }).join('');
+
+    prev.innerHTML='<div class="notice ok"><strong>'+imported.length+' Buchungen erkannt</strong>'
+      +' &nbsp;·&nbsp; Einnahmen: '+fmt(einS)+' &nbsp;·&nbsp; Ausgaben: '+fmt(ausS)
+      +' &nbsp;·&nbsp; '+rcCount+' Reverse-Charge</div>'
+      +'<div class="tw-wrap" style="max-height:220px;overflow-y:auto;margin:10px 0">'
+      +'<table><thead><tr><th>Datum</th><th>Beschreibung</th><th>SKR 03</th><th>Kategorie</th><th>Steuer</th><th class="tr">Betrag</th></tr></thead>'
+      +'<tbody>'+rows+'</tbody></table></div>'
+      +(imported.length>15?'<div style="color:var(--muted);font-size:.75rem;margin-bottom:8px">... und '+(imported.length-15)+' weitere</div>':'')
+      +'<button class="btn bp bs" onclick="confirmCSV()">Alle '+imported.length+' importieren</button>';
+  };
+  reader.readAsText(file,'ISO-8859-1');
+}
+function confirmCSV(){
+  if(!window._csv)return;
+  data=[...data,...window._csv].sort((a,b)=>b.datum.localeCompare(a.datum));
+  persist();refresh();
+  document.getElementById('csvPrev').innerHTML='<div class="notice ok">✓ Importiert</div>';
+  toast(`✓ ${window._csv.length} Buchungen importiert`);
+}
+
+// ══════════════════════════════════
+// ETSY CSV IMPORT
+// ══════════════════════════════════
+function parseDatum(s){
+  const MO={'jan':'01','feb':'02','mär':'03','mar':'03','apr':'04','mai':'05','may':'05','jun':'06','jul':'07','aug':'08','sep':'09','okt':'10','oct':'10','nov':'11','dez':'12','dec':'12'};
+  s=(s||'').trim();
+  let m=s.match(/^(\d{1,2})\.\s*([A-Za-z\u00e4\u00f6\u00fc]+)\s+(\d{4})$/);
+  if(m){const mo=MO[m[2].toLowerCase().slice(0,3)];if(mo)return m[3]+'-'+mo+'-'+m[1].padStart(2,'0');}
+  if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+  m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(m)return m[3]+'-'+m[2]+'-'+m[1];
+  m=s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);if(m)return m[3]+'-'+m[2]+'-'+m[1];
+  return '';
+}
+function parseEtsyBetrag(s){
+  if(!s||['-,-','--',''].includes(s.trim()))return null;
+  const n=parseFloat(s.replace(/[^\d,.\-]/g,'').replace(/\.(?=\d{3})/g,'').replace(',','.'));
+  return isNaN(n)?null:n;
+}
+function etsyArtTyp(art,netto){
+  const a=(art||'').toLowerCase();
+  if(a.includes('zahlung')||a.includes('payment')||a.includes('deposit')||a.includes('auszahlung'))
+    return{typ:'einnahme',steuer:'etsy_dep',kat:'Etsy-Verkauf',skr:'8100'};
+  if(a.includes('marketing')||a.includes('abonnement')||a.includes('listing')||a.includes('plus'))
+    return{typ:'ausgabe',steuer:'etsy_rc',kat:'Marketing & Werbung',skr:'4210'};
+  if(a.includes('transaktion')||a.includes('transaction'))
+    return{typ:'ausgabe',steuer:'etsy_rc',kat:'Marketing & Werbung',skr:'4210'};
+  if(a.includes('bearbeitungs')||a.includes('processing'))
+    return{typ:'ausgabe',steuer:'etsy_rc',kat:'Software & Tools',skr:'4980'};
+  if(a.includes('steuer')||a.includes('tax')||a.includes('ust'))
+    return{typ:'ausgabe',steuer:'etsy_ust',kat:'Sonstiges',skr:'4900'};
+  if(a.includes('erstattung')||a.includes('refund'))
+    return{typ:'ausgabe',steuer:'etsy_dep',kat:'Sonstiges',skr:'4900'};
+  return netto&&netto>0
+    ?{typ:'einnahme',steuer:'etsy_dep',kat:'Etsy-Verkauf',skr:'8100'}
+    :{typ:'ausgabe',steuer:'etsy_fee',kat:'Marketing & Werbung',skr:'4210'};
+}
+function etsyImport(){
+  const file=document.getElementById('etsyF').files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const lines=e.target.result.split('\n').filter(l=>l.trim());
+    if(lines.length<2){toast('Datei leer');return;}
+    const hdr=parseCSVLine(lines[0]).map(h=>h.trim().toLowerCase());
+    // Spalten-Indizes: deutsches Format = Datum,Art,Titel,Info,Währung,Betrag,Geb&St,Netto,Steuerl.
+    const colD =hdr.findIndex(h=>h==='datum'||h==='date');
+    const colA =hdr.findIndex(h=>h==='art'||h==='type');
+    const colT =hdr.findIndex(h=>h==='titel'||h==='title'||h.startsWith('tit'));
+    const colN =hdr.findIndex(h=>h==='netto'||h==='net');
+    // Fallback auf Positionen des deutschen Formats
+    const iD=colD>=0?colD:0, iA=colA>=0?colA:1, iT=colT>=0?colT:2, iN=colN>=0?colN:7;
+    const imported=[];
+    lines.slice(1).forEach((line,i)=>{
+      const cols=parseCSVLine(line);
+      if(!cols||cols.length<3)return;
+      const datum=parseDatum((cols[iD]||'').trim());
+      if(!datum)return;
+      const art=(cols[iA]||'').trim();
+      const titel=(cols[iT]||cols[2]||'').trim();
+      // Netto-Spalte bevorzugen, sonst letzte Betragsspalte
+      let netto=parseEtsyBetrag(cols[iN]||'');
+      if(netto===null) netto=parseEtsyBetrag(cols[cols.length-2]||'');
+      if(netto===null)return;
+      const {typ,steuer,kat,skr}=etsyArtTyp(art,netto);
+      imported.push({id:Date.now()+i+Math.random(),typ,datum,betrag:Math.abs(netto),
+        desc:titel||art||'Etsy',kat,konto:'Etsy',skr,steuer,notiz:'Etsy-Import'});
+    });
+    window._etsy=imported;
+    const prev=document.getElementById('etsyPrev');
+    if(!imported.length){
+      prev.innerHTML='<div class="notice">Keine Buchungen erkannt.<br>Erkannte Spalten: '+hdr.join(' | ')+'<br>Erwartet: Datum, Art, Titel, ..., Netto</div>';
+      return;
+    }
+    const einS=imported.filter(b=>b.typ==='einnahme').reduce((s,b)=>s+b.betrag,0);
+    const ausS=imported.filter(b=>b.typ==='ausgabe').reduce((s,b)=>s+b.betrag,0);
+    prev.innerHTML='<div class="notice ok" style="margin-top:10px"><strong>'+imported.length+' Transaktionen erkannt</strong> &nbsp;·&nbsp; Einnahmen: '+fmt(einS)+' &nbsp;·&nbsp; Gebühren: '+fmt(ausS)+'</div>'
+      +'<div class="tw-wrap" style="max-height:200px;overflow-y:auto;margin:10px 0">'
+      +'<table><thead><tr><th>Datum</th><th>Art</th><th>Beschreibung</th><th>SKR 03</th><th>Steuer</th><th class="tr">Betrag</th></tr></thead><tbody>'
+      +imported.slice(0,15).map(b=>'<tr><td style="color:var(--muted);white-space:nowrap">'+new Date(b.datum).toLocaleDateString('de-DE')+'</td>'
+        +'<td style="color:'+(b.typ==='einnahme'?'var(--sage)':'var(--terra)')+';font-size:.78rem">'+(b.typ==='einnahme'?'↑ Ein':'↓ Aus')+'</td>'
+        +'<td style="font-size:.8rem">'+b.desc+'</td><td>'+skrBadge(b.skr)+'</td><td>'+taxBadge(b.steuer)+'</td>'
+        +'<td class="tr '+(b.typ==='einnahme'?'tg':'tr2')+'">'+fmt(b.betrag)+'</td></tr>').join('')
+      +'</tbody></table></div>'
+      +(imported.length>15?'<div style="color:var(--muted);font-size:.75rem;margin-bottom:8px">... und '+(imported.length-15)+' weitere</div>':'')
+      +'<button class="btn bp bs" onclick="confirmEtsy()">Alle '+imported.length+' importieren</button>'
+      +'<button class="btn bo bs" style="margin-left:8px" onclick="document.getElementById(\'etsyPrev\').innerHTML=\'\';window._etsy=null;document.getElementById(\'etsyF\').value=\'\'">Abbrechen</button>';
+  };
+  reader.readAsText(file,'UTF-8');
+}
+function parseCSVLine(line){const cols=[];let cur='',inQ=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){cols.push(cur.trim());cur='';}else cur+=c;}cols.push(cur.trim());return cols;}
+function confirmEtsy(){
+  if(!window._etsy)return;
+  etsy=[...etsy,...window._etsy].sort((a,b)=>b.datum.localeCompare(a.datum));
+  persist();refresh();renderEtsy();
+  document.getElementById('etsyPrev').innerHTML='<div class="notice ok">✓ Etsy-Import erfolgreich</div>';
+  toast(`✓ ${window._etsy.length} Etsy-Buchungen importiert`);
+  window._etsy=null;
+}
+
+// ══════════════════════════════════
+// REFRESH
+// ══════════════════════════════════
+function allB(){return [...data,...etsy];}
+function refresh(){
+  const all=allB();
+  const ein=sum(all,'einnahme'),aus=sum(all,'ausgabe'),gew=ein-aus;
+  set('kE',fmt(ein));set('kA',fmt(aus));
+  set('kEn',all.filter(b=>b.typ==='einnahme').length+' Buchungen');
+  set('kAn',all.filter(b=>b.typ==='ausgabe').length+' Buchungen');
+  const gEl=document.getElementById('kG');gEl.textContent=fmt(gew);gEl.className='kpi-v '+(gew>=0?'g':'r');
+  const _rp=getRueckl().reduce((s,r)=>s+r.proz,0); set('kS',fmt(Math.max(0,gew)*(_rp/100)));
+  const p=Math.min(100,(ein/25000)*100);
+  set('kKU',p.toFixed(1)+' %');set('kuTxt',fmt(ein)+' / 25.000 €');set('kuPrz',p.toFixed(1)+' %');
+  const kb=document.getElementById('kuBar');kb.style.width=p+'%';kb.style.background=p<60?'var(--sage)':p<85?'#d4a843':'var(--terra)';
+  set('kuHint',p<60?'Sicher im Kleinunternehmer-Bereich.':p<85?'Du näherst dich der Grenze.':p<100?'Fast an der Grenze!':'Grenze überschritten!');
+  [['Sparkasse','cSp'],['PayPal','cPp'],['Kontist','cKo'],['Barzahlung','cBa']].forEach(([k,id])=>{
+    const e=data.filter(b=>b.konto===k&&b.typ==='einnahme').reduce((s,b)=>s+b.betrag,0);
+    const a=data.filter(b=>b.konto===k&&b.typ==='ausgabe').reduce((s,b)=>s+b.betrag,0);
+    const el=document.getElementById(id);if(el){el.textContent=fmt(e-a);el.style.color=e-a>=0?'var(--brown)':'var(--terra)';}
+  });
+  const etE=sum(etsy,'einnahme'),etA=sum(etsy,'ausgabe');
+  const ceEl=document.getElementById('cEt');if(ceEl){ceEl.textContent=fmt(etE-etA);ceEl.style.color=etE-etA>=0?'var(--brown)':'var(--terra)';}
+  renderBarChart();renderLast();
+  // SKR filter options
+  const skrSel=document.getElementById('fSKR');
+  if(skrSel){const used=[...new Set(allB().map(b=>b.skr).filter(Boolean))].sort();
+    skrSel.innerHTML='<option value="">Alle</option>'+used.map(s=>`<option value="${s}">${s} · ${SKR[s]?.name||''}</option>`).join('');}
+}
+
+function renderBarChart(){
+  const all=allB();const e=Array(12).fill(0),a=Array(12).fill(0);
+  all.forEach(b=>{const m=new Date(b.datum).getMonth();if(b.typ==='einnahme')e[m]+=b.betrag;else a[m]+=b.betrag;});
+  const mx=Math.max(...e,...a,1);
+  document.getElementById('barChart').innerHTML=MONATE.map((m,i)=>`
+    <div class="cc"><div style="display:flex;gap:2px;align-items:flex-end;height:65px">
+      <div class="cb2" style="background:var(--sage);height:${(e[i]/mx)*61}px;width:8px" title="${m}: ${fmt(e[i])}"></div>
+      <div class="cb2" style="background:var(--terra);height:${(a[i]/mx)*61}px;width:8px" title="${m}: ${fmt(a[i])}"></div>
+    </div><div class="cc-l">${m}</div></div>`).join('');
+}
+
+function renderLast(){
+  const all=allB().slice(0,8);
+  document.getElementById('lastB').innerHTML=all.length===0
+    ?'<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:22px">Noch keine Buchungen</td></tr>'
+    :all.map(b=>`<tr><td style="color:var(--muted);white-space:nowrap">${new Date(b.datum).toLocaleDateString('de-DE')}</td>
+      <td>${b.desc}</td><td>${skrBadge(b.skr)}</td>
+      <td><span style="font-size:.7rem;background:var(--sand);padding:1px 7px;border-radius:20px">${b.konto}</span></td>
+      <td>${taxBadge(b.steuer)}</td>
+      <td class="tr ${b.typ==='einnahme'?'tg':'tr2'}">${b.typ==='einnahme'?'+':'-'}${fmt(b.betrag)}</td></tr>`).join('');
+}
+
+function renderTable(){
+  const s=(document.getElementById('fS').value||'').toLowerCase();
+  const t=document.getElementById('fT').value,k=document.getElementById('fK').value;
+  const m=document.getElementById('fM').value,sk=document.getElementById('fSKR').value;
+  const src=b=>etsy.find(x=>x.id===b.id)?'e':'m';
+  const f=allB().filter(b=>{
+    if(t&&b.typ!==t)return false;if(k&&b.konto!==k)return false;
+    if(m!==''&&new Date(b.datum).getMonth()!==parseInt(m))return false;
+    if(sk&&b.skr!==sk)return false;
+    if(s&&!b.desc.toLowerCase().includes(s)&&!b.kat.toLowerCase().includes(s))return false;
+    return true;
+  });
+  document.getElementById('buchT').innerHTML=f.length===0
+    ?'<tr><td colspan="9" style="color:var(--muted);text-align:center;padding:22px">Keine Buchungen gefunden</td></tr>'
+    :f.map(b=>`<tr>
+      <td style="color:var(--muted);white-space:nowrap">${new Date(b.datum).toLocaleDateString('de-DE')}</td>
+      <td><span style="width:6px;height:6px;border-radius:50%;display:inline-block;background:${b.typ==='einnahme'?'var(--sage)':'var(--terra)'}"></span></td>
+      <td>${b.desc}</td><td style="font-size:.76rem;color:var(--muted)">${b.kat}</td>
+      <td>${skrBadge(b.skr)}</td>
+      <td><span style="font-size:.7rem;background:var(--sand);padding:1px 7px;border-radius:20px">${b.konto}</span></td>
+      <td>${taxBadge(b.steuer)}</td>
+      <td class="tr ${b.typ==='einnahme'?'tg':'tr2'}">${b.typ==='einnahme'?'+':'-'}${fmt(b.betrag)}</td>
+      <td><button class="btn bg bs" onclick="del(${b.id},'${src(b)}')" style="color:var(--terra)">✕</button></td></tr>`).join('');
+}
+
+function renderEtsy(){
+  const deps=etsy.filter(b=>b.steuer==='etsy_dep');
+  const fees=etsy.filter(b=>b.steuer!=='etsy_dep');
+  const eS=deps.reduce((s,b)=>s+b.betrag,0),fS=fees.reduce((s,b)=>s+b.betrag,0);
+  const rcS=etsy.filter(b=>b.steuer==='etsy_rc').reduce((s,b)=>s+b.betrag,0);
+  document.getElementById('etsyEin').innerHTML=deps.length===0?'<span style="color:var(--muted);font-size:.8rem">Noch keine Daten</span>'
+    :`<div class="er"><span style="font-weight:400">Auszahlungen gesamt</span><span class="tg" style="font-weight:700">${fmt(eS)}</span></div>`+deps.slice(0,6).map(b=>`<div class="er sub"><span>${new Date(b.datum).toLocaleDateString('de-DE')} · ${b.desc}</span><span>${fmt(b.betrag)}</span></div>`).join('');
+  document.getElementById('etsyGeb').innerHTML=fees.length===0?'<span style="color:var(--muted);font-size:.8rem">Noch keine Daten</span>'
+    :`<div class="er"><span style="font-weight:400">Gebühren gesamt</span><span class="tr2" style="font-weight:700">${fmt(fS)}</span></div>
+     <div class="er sub"><span>davon Reverse Charge §13b</span><span>${fmt(rcS)}</span></div>
+     <div style="margin-top:8px;font-size:.74rem;color:var(--muted);line-height:1.6">Als KU: keine USt-Abfuhr. Nur kennzeichnen.</div>`;
+}
+
+function renderSteuern(){
+  const all=allB();
+  const ein=sum(all,'einnahme'),aus=sum(all,'ausgabe'),gew=ein-aus;
+  set('stG',fmt(gew));
+  const rc=all.filter(b=>b.steuer==='rc'||b.steuer==='etsy_rc').reduce((s,b)=>s+b.betrag,0);
+  set('stRC',fmt(rc));
+  renderRuecklRechner();
+  renderEST();
+  const ruecklProz=getRueckl().reduce((s,r)=>s+r.proz,0);
+  const q=[0,1,2,3].map(i=>({e:0,a:0}));
+  all.forEach(b=>{const qi=Math.floor(new Date(b.datum).getMonth()/3);if(b.typ==='einnahme')q[qi].e+=b.betrag;else q[qi].a+=b.betrag;});
+  const qEl=document.getElementById('qStT');
+  if(qEl) qEl.innerHTML=q.map((x,i)=>{
+    const g=Math.max(0,x.e-x.a),r=g*(ruecklProz/100),fr=g-r;
+    return '<tr><td>Q'+( i+1)+'</td><td class="tr">'+fmt(g)+'</td><td class="tr tw">'+fmt(r)+'</td><td class="tr tg">'+fmt(fr)+'</td></tr>';
+  }).join('');
+  const rcBuch=all.filter(b=>b.steuer==='rc'||b.steuer==='etsy_rc');
+  const rcEl=document.getElementById('rcL');
+  if(rcEl) rcEl.innerHTML=rcBuch.length===0?'<span style="color:var(--muted);font-size:.8rem">Keine RC-Buchungen</span>'
+    :rcBuch.map(b=>'<div class="er sub"><span>'+new Date(b.datum).toLocaleDateString('de-DE')+' · '+b.desc+'</span><span>'+fmt(b.betrag)+'</span></div>').join('');
+}
+
+function renderSKR(){
+  const all=allB();
+  const einMap={},ausMap={};
+  all.filter(b=>b.typ==='einnahme').forEach(b=>{einMap[b.skr||'8000']=(einMap[b.skr||'8000']||0)+b.betrag;});
+  all.filter(b=>b.typ==='ausgabe').forEach(b=>{ausMap[b.skr||'4900']=(ausMap[b.skr||'4900']||0)+b.betrag;});
+  document.getElementById('skrEin').innerHTML=Object.entries(einMap).sort((a,b)=>b[1]-a[1]).map(([s,v])=>`
+    <div class="er"><span>${skrBadge(s)} <span style="font-size:.8rem;color:var(--muted);margin-left:4px">${SKR[s]?.name||'Einnahme'}</span></span><span class="tg" style="font-weight:400">${fmt(v)}</span></div>`).join('')||'<span style="color:var(--muted);font-size:.8rem">Keine Einnahmen</span>';
+  document.getElementById('skrAus').innerHTML=Object.entries(ausMap).sort((a,b)=>b[1]-a[1]).map(([s,v])=>`
+    <div class="er"><span>${skrBadge(s)} <span style="font-size:.8rem;color:var(--muted);margin-left:4px">${SKR[s]?.name||'Ausgabe'}</span></span><span class="tr2" style="font-weight:400">${fmt(v)}</span></div>`).join('')||'<span style="color:var(--muted);font-size:.8rem">Keine Ausgaben</span>';
+}
+
+function renderSKRRef(){
+  const gruppen={};
+  Object.entries(SKR).forEach(([k,v])=>{
+    const g=v.gruppe||'Sonstiges';
+    if(!gruppen[g])gruppen[g]=[];
+    gruppen[g].push([k,v]);
+  });
+  let html='';
+  Object.entries(gruppen).forEach(([g,konten])=>{
+    html+=`<tr><td colspan="4" style="background:var(--sand);font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:7px 12px;font-weight:400">${g}</td></tr>`;
+    html+=konten.map(([k,v])=>`<tr>
+      <td>${skrBadge(k)}</td>
+      <td style="font-size:.81rem">${v.name}</td>
+      <td style="color:${v.typ==='einnahme'?'var(--sage)':'var(--terra)'};font-size:.75rem">${v.typ==='einnahme'?'Einnahme':'Ausgabe'}</td>
+      <td style="color:var(--muted);font-size:.75rem">${v.kat}</td></tr>`).join('');
+  });
+  document.getElementById('skrRefT').innerHTML=html;
+}
+
+function renderRegelT(){
+  document.getElementById('regelT').innerHTML=REGELN.map(r=>`<tr>
+    <td style="font-size:.76rem;color:var(--muted)">${r.keys.slice(0,4).join(', ')}${r.keys.length>4?' …':''}</td>
+    <td>${skrBadge(r.skr)}</td>
+    <td style="font-size:.78rem">${r.kat}</td>
+    <td style="color:${r.typ==='einnahme'?'var(--sage)':'var(--terra)'};font-size:.78rem">${r.typ==='einnahme'?'Einnahme':'Ausgabe'}</td></tr>`).join('');
+}
+
+function renderAuswertung(){
+  const all=allB();const ein=sum(all,'einnahme'),aus=sum(all,'ausgabe'),gew=ein-aus;
+  const eK={},aK={};
+  KATEGORIEN.einnahme.forEach(k=>{const s=all.filter(b=>b.typ==='einnahme'&&b.kat===k).reduce((s,b)=>s+b.betrag,0);if(s)eK[k]=s;});
+  KATEGORIEN.ausgabe.forEach(k=>{const s=all.filter(b=>b.typ==='ausgabe'&&b.kat===k).reduce((s,b)=>s+b.betrag,0);if(s)aK[k]=s;});
+  document.getElementById('euerB').innerHTML=`
+    <div class="er hd"><span>Einnahmen</span><span>${fmt(ein)}</span></div>
+    ${Object.entries(eK).map(([k,v])=>`<div class="er sub"><span>${k}</span><span>${fmt(v)}</span></div>`).join('')}
+    <div class="er hd" style="margin-top:6px"><span>Ausgaben</span><span>${fmt(aus)}</span></div>
+    ${Object.entries(aK).map(([k,v])=>`<div class="er sub"><span>${k}</span><span>${fmt(v)}</span></div>`).join('')}
+    <div class="er tot"><span>Gewinn</span><span style="color:${gew>=0?'var(--sage)':'var(--terra)'}">${fmt(gew)}</span></div>`;
+  const q=[0,1,2,3].map(i=>({e:0,a:0}));
+  all.forEach(b=>{const qi=Math.floor(new Date(b.datum).getMonth()/3);if(b.typ==='einnahme')q[qi].e+=b.betrag;else q[qi].a+=b.betrag;});
+  document.getElementById('qT').innerHTML=q.map((x,i)=>`<tr><td>Q${i+1}</td><td class="tr tg">${fmt(x.e)}</td><td class="tr tr2">${fmt(x.a)}</td><td class="tr" style="color:${x.e-x.a>=0?'var(--sage)':'var(--terra)'};font-weight:400">${fmt(x.e-x.a)}</td></tr>`).join('');
+  document.getElementById('konR').innerHTML=[...['Sparkasse','PayPal','Kontist','Barzahlung'].map(k=>{const arr=data.filter(b=>b.konto===k);const e=sum(arr,'einnahme'),a=sum(arr,'ausgabe');return`<div class="er"><span>${k}</span><span style="font-weight:400;color:${e-a>=0?'var(--sage)':'var(--terra)'}">${fmt(e-a)}</span></div>`;}),`<div class="er"><span>Etsy</span><span style="font-weight:400;color:${sum(etsy,'einnahme')-sum(etsy,'ausgabe')>=0?'var(--sage)':'var(--terra)'}">${fmt(sum(etsy,'einnahme')-sum(etsy,'ausgabe'))}</span></div>`].join('');
+  document.getElementById('katR').innerHTML=Object.entries(aK).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="er"><span>${k}</span><span>${fmt(v)}</span></div>`).join('')||'<span style="color:var(--muted);font-size:.8rem">Noch keine Ausgaben</span>';
+}
+
+function renderExport(){
+  const all=allB();const ein=sum(all,'einnahme'),aus=sum(all,'ausgabe'),gew=ein-aus;
+  document.getElementById('expE').innerHTML=`
+    <div class="er"><span>Betriebseinnahmen</span><span style="font-weight:400">${fmt(ein)}</span></div>
+    <div class="er"><span>Betriebsausgaben</span><span style="font-weight:400">${fmt(aus)}</span></div>
+    <div class="er tot"><span>Gewinn</span><span style="color:${gew>=0?'var(--sage)':'var(--terra)'}">${fmt(gew)}</span></div>
+    <div class="er" style="border:none;color:var(--muted);font-size:.72rem"><span>§19 UStG · SKR 03 · EÜR · ${year}</span><span>${all.length} Buchungen</span></div>`;
+}
+
+function doCSV(){
+  const all=allB();
+  const h='Datum;Typ;Beschreibung;Kategorie;SKR03;Konto;Steuer;Betrag;Notiz\n';
+  const rows=all.map(b=>`${b.datum};${b.typ};${b.desc};${b.kat};${b.skr||''};${b.konto};${b.steuer||''};${b.betrag.toFixed(2)};${b.notiz||''}`).join('\n');
+  const blob=new Blob(['\uFEFF'+h+rows],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`Fuehlkraft-Buchhaltung-SKR03-${year}.csv`;a.click();
+}
+
+
+// ══ RÜCKLAGEN ══
+const RUECKL_DEF=[{id:1,name:'Steuerrücklage',proz:25,farbe:'#c5a063'},{id:2,name:'Krankenkasse',proz:6,farbe:'#2d5ab8'},{id:3,name:'Fixkostenanteil',proz:10,farbe:'var(--terra)'},{id:4,name:'Investitionen',proz:5,farbe:'var(--sage)'}];
+function getRueckl(){return JSON.parse(localStorage.getItem('fk4_rueckl')||JSON.stringify(RUECKL_DEF));}
+function saveRueckl(r){localStorage.setItem('fk4_rueckl',JSON.stringify(r));}
+function renderRuecklRechner(){
+  const gew=Math.max(0,sum(allB(),'einnahme')-sum(allB(),'ausgabe'));
+  const list=getRueckl();
+  const totalProz=list.reduce((s,r)=>s+r.proz,0);
+  const totalEur=gew*(totalProz/100);
+  const frei=Math.max(0,gew-totalEur);
+  const el=document.getElementById('ruecklRechner');
+  if(el) el.innerHTML=list.map(r=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+      <span style="width:9px;height:9px;border-radius:50%;background:${r.farbe};flex-shrink:0;display:inline-block"></span>
+      <input type="text" value="${r.name}" onchange="updRueckl(${r.id},'name',this.value)" style="flex:1;min-width:110px;font-size:.81rem;padding:6px 9px;border:1px solid var(--border);border-radius:6px;background:var(--cream)">
+      <input type="number" value="${r.proz}" min="0" max="100" onchange="updRueckl(${r.id},'proz',parseFloat(this.value)||0)" style="width:56px;font-size:.81rem;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--cream);text-align:right">
+      <span style="font-size:.78rem;color:var(--muted)">%</span>
+      <span style="width:86px;text-align:right;font-size:.81rem;font-weight:400;color:var(--brown)">${fmt(gew*(r.proz/100))}</span>
+      <button onclick="delRueckl(${r.id})" style="background:none;border:none;color:var(--terra);cursor:pointer;font-size:.9rem;padding:2px 5px">✕</button>
+    </div>`).join('');
+  set('ruecklSumme',fmt(totalEur)); set('ruecklFrei',fmt(frei));
+  set('stR',fmt(totalEur)); set('stFrei',fmt(frei));
+}
+function updRueckl(id,field,val){const list=getRueckl();const r=list.find(x=>x.id===id);if(r)r[field]=field==='proz'?parseFloat(val)||0:val;saveRueckl(list);renderRuecklRechner();}
+function delRueckl(id){saveRueckl(getRueckl().filter(r=>r.id!==id));renderRuecklRechner();}
+function addRueckl(){const list=getRueckl();list.push({id:Date.now(),name:'Neuer Topf',proz:5,farbe:'var(--muted)'});saveRueckl(list);renderRuecklRechner();}
+
+// ══ EINKOMMENSTEUER §32a EStG 2025 ══
+function calcEST(z){
+  if(z<=11604)return 0;
+  if(z<=17005){const y=(z-11604)/10000;return Math.round((979.18*y+1400)*y);}
+  if(z<=66760){const y=(z-17005)/10000;return Math.round((192.59*y+2397)*y+966);}
+  if(z<=277825)return Math.round(0.42*z-10602);
+  return Math.round(0.45*z-18936);
+}
+function renderEST(){
+  const gew=Math.max(0,sum(allB(),'einnahme')-sum(allB(),'ausgabe'));
+  const est=calcEST(gew);
+  const soli=est>18130?est*0.055:0;
+  const gesamt=est+soli;
+  const eff=gew>0?(gesamt/gew*100):0;
+  const el=document.getElementById('estBlock');
+  if(!el)return;
+  el.innerHTML=`
+    <div class="er"><span style="color:var(--muted)">Gewinn (geschätzt)</span><span>${fmt(gew)}</span></div>
+    <div class="er"><span style="color:var(--muted)">Grundfreibetrag 2025</span><span style="color:var(--sage)">− ${fmt(11604)}</span></div>
+    <div class="er"><span style="color:var(--muted)">Einkommensteuer</span><span style="color:var(--terra);font-weight:400">${fmt(est)}</span></div>
+    ${soli>0?`<div class="er"><span style="color:var(--muted)">Solidaritätszuschlag</span><span style="color:var(--terra)">${fmt(soli)}</span></div>`:''}
+    <div class="er tot"><span>Gesamtsteuer (ca.)</span><span style="color:var(--terra)">${fmt(gesamt)}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-top:8px;margin-bottom:4px"><span style="color:var(--muted)">Effektiver Steuersatz</span><span style="font-weight:700;color:var(--brown)">${eff.toFixed(1)} %</span></div>
+    <div class="prog" style="height:7px"><div class="pf" style="width:${Math.min(eff,55)/55*100}%;background:var(--terra)"></div></div>`;
+}
+
+// ══ SCHNELL-BUCHUNGEN EDITOR ══
+function getSchnell(){return JSON.parse(localStorage.getItem('fk4_schnell')||'[]');}
+function saveSchnellLS(s){localStorage.setItem('fk4_schnell',JSON.stringify(s));}
+function updSnKat(){
+  const t=document.getElementById('snTyp')?.value||'ausgabe';
+  const el=document.getElementById('snKat');
+  if(el)el.innerHTML=KATEGORIEN[t].map(k=>`<option>${k}</option>`).join('');
+}
+function addSchnell(){
+  const name=document.getElementById('snName').value.trim();
+  if(!name){toast('Bitte einen Namen eingeben');return;}
+  const list=getSchnell();
+  list.push({id:Date.now(),name,typ:document.getElementById('snTyp').value,betrag:parseFloat(document.getElementById('snBet').value)||0,kat:document.getElementById('snKat').value,konto:document.getElementById('snKon').value,steuer:document.getElementById('snSt').value});
+  saveSchnellLS(list);
+  document.getElementById('snName').value='';document.getElementById('snBet').value='';
+  renderSchnellListe();renderSchnellButtons();toast('✓ Gespeichert');
+}
+function delSchnell(id){saveSchnellLS(getSchnell().filter(s=>s.id!==id));renderSchnellListe();renderSchnellButtons();}
+function renderSchnellListe(){
+  const list=getSchnell();
+  const el=document.getElementById('schnellListe');if(!el)return;
+  if(!list.length){el.innerHTML='<span style="color:var(--muted);font-size:.8rem">Noch keine eigenen Schnell-Buchungen</span>';return;}
+  el.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:8px">'+list.map(s=>`
+    <div style="display:flex;align-items:center;border:1px solid var(--border);border-radius:6px;overflow:hidden">
+      <button class="btn bs" style="border:none;border-radius:0;background:${s.typ==='einnahme'?'#f0f7f0':'#fff5f0'};text-transform:none;letter-spacing:0" onclick="qb('${s.typ}','${s.name.replace(/'/g,"\\'")}',${s.betrag},'${s.kat}','${s.konto}','${KAT_SKR_AUS[s.kat]||KAT_SKR_EIN[s.kat]||'4980'}','${s.steuer}')">${s.name}${s.betrag?' · '+fmt(s.betrag):''}</button>
+      <button style="background:none;border:none;border-left:1px solid var(--border);padding:5px 8px;cursor:pointer;color:var(--terra);font-size:.8rem" onclick="delSchnell(${s.id})">✕</button>
+    </div>`).join('')+'</div>';
+}
+
+// ══ BELEGE ══
+function getBelege(){return JSON.parse(localStorage.getItem('fk4_belege')||'{}');}
+function saveBelege(b){localStorage.setItem('fk4_belege',JSON.stringify(b));}
+function renderBelegListe(){
+  const suche=(document.getElementById('belegSuche')?.value||'').toLowerCase();
+  const all=allB().filter(b=>!suche||b.desc.toLowerCase().includes(suche)).slice(0,20);
+  const belege=getBelege();
+  const el=document.getElementById('belegListe');if(!el)return;
+  if(!all.length){el.innerHTML='<span style="color:var(--muted);font-size:.8rem">Keine Buchungen gefunden</span>';return;}
+  el.innerHTML=all.map(b=>{
+    const hat=belege[b.id];
+    return `<div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #f0ebe6;flex-wrap:wrap">
+      <span style="color:var(--muted);font-size:.74rem;white-space:nowrap">${new Date(b.datum).toLocaleDateString('de-DE')}</span>
+      <span style="flex:1;font-size:.81rem">${b.desc}</span>
+      <span style="font-size:.81rem;font-weight:400;color:${b.typ==='einnahme'?'var(--sage)':'var(--terra)'}">${b.typ==='einnahme'?'+':'-'}${fmt(b.betrag)}</span>
+      ${hat?`<a href="${hat.data}" download="${hat.name}" style="font-size:.71rem;color:var(--sage);text-decoration:none;border:1px solid var(--sage);padding:2px 8px;border-radius:4px">📎 ${hat.name}</a><button style="background:none;border:none;color:var(--terra);cursor:pointer;font-size:.8rem" onclick="delBeleg(${b.id})">✕</button>`
+           :`<label style="cursor:pointer;font-size:.71rem;color:var(--terra);border:1px solid var(--terra);padding:2px 8px;border-radius:4px">📎 anhängen<input type="file" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="uploadBeleg(${b.id},'${b.desc.replace(/'/g,"\\'")}',this)"></label>`}
+    </div>`;
+  }).join('');
+}
+function uploadBeleg(buchId,buchName,input){
+  const file=input.files[0];if(!file)return;
+  if(file.size>2*1024*1024){toast('Datei zu groß (max 2 MB)');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{const belege=getBelege();belege[buchId]={name:file.name,data:e.target.result};saveBelege(belege);renderBelegListe();toast('✓ Beleg gespeichert');};
+  reader.readAsDataURL(file);
+}
+function delBeleg(buchId){const b=getBelege();delete b[buchId];saveBelege(b);renderBelegListe();}
+
+
+// ══════════════════════════════════
+// DATEN EXPORT / IMPORT (USB-Stick)
+// ══════════════════════════════════
+function exportDaten(){
+  const alle={};
+  // Alle Jahre sichern
+  for(let y=2023;y<=2026;y++){
+    const d=localStorage.getItem('fk4_'+y);
+    const e=localStorage.getItem('fk4e_'+y);
+    if(d) alle['fk4_'+y]=JSON.parse(d);
+    if(e) alle['fk4e_'+y]=JSON.parse(e);
+  }
+  alle['fk4_rueckl']=getRueckl();
+  alle['fk4_schnell']=getSchnell();
+  alle['fk4_belege']=getBelege();
+  alle['_exportiert']=new Date().toLocaleString('de-DE');
+  alle['_version']='4';
+
+  const blob=new Blob([JSON.stringify(alle,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='Fuehlkraft-Buchhaltung-Backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+
+  // Datum der letzten Sicherung merken
+  localStorage.setItem('fk4_lastbackup', new Date().toLocaleString('de-DE'));
+  updateBackupHint();
+  toast('✓ Daten gesichert — bitte auf USB-Stick speichern!');
+}
+
+function importDaten(input){
+  const file=input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const alle=JSON.parse(e.target.result);
+      if(!alle._version){toast('Ungültige Datei');return;}
+      if(!confirm('Alle aktuellen Daten werden durch die Sicherung ersetzt. Fortfahren?'))return;
+
+      Object.entries(alle).forEach(([k,v])=>{
+        if(k.startsWith('_'))return;
+        localStorage.setItem(k, typeof v==='string'?v:JSON.stringify(v));
+      });
+      load();
+      toast('✓ Daten wiederhergestellt — '+alle._exportiert);
+    }catch(err){
+      toast('Fehler beim Einlesen der Datei');
+    }
+  };
+  reader.readAsText(file,'UTF-8');
+  input.value='';
+}
+
+function updateBackupHint(){
+  const el=document.getElementById('letzteBackup');
+  if(!el)return;
+  const d=localStorage.getItem('fk4_lastbackup');
+  el.textContent=d||'noch keine';
+}
+
+// ══════════════════════════════════
+// SCHNELL-BUTTONS IM ERFASSEN-TAB
+// ══════════════════════════════════
+function renderSchnellButtons(){
+  const el=document.getElementById('schnellBtnArea');
+  if(!el)return;
+  const list=getSchnell();
+  if(!list.length){
+    el.innerHTML='<span style="color:var(--muted);font-size:.8rem">Noch keine Schnell-Buchungen — Tab "★ Schnell-Buchungen" zum Anlegen nutzen.</span>';
+    return;
+  }
+  el.innerHTML=list.map(s=>`
+    <button class="btn bo bs" style="background:${s.typ==='einnahme'?'#f0f7f0':'#fff5f0'}"
+      onclick="qb('${s.typ}','${s.name.replace(/'/g,"\'")}',${s.betrag||0},'${s.kat}','${s.konto}','${KAT_SKR_AUS[s.kat]||KAT_SKR_EIN[s.kat]||'4980'}','${s.steuer}')">
+      ${s.name}${s.betrag?' · '+fmt(s.betrag):''}
+    </button>`).join('');
+}
+
+
+// ══════════════════════════════════
+// RECHNUNGS-GENERATOR
+// ══════════════════════════════════
+let rPositionen = [{id:1, desc:'', menge:1, preis:0}];
+
+function getRechnungen(){ return JSON.parse(localStorage.getItem('fk4_rechnungen')||'[]'); }
+function saveRechnungen(r){ localStorage.setItem('fk4_rechnungen', JSON.stringify(r)); }
+function getAbs(){ return JSON.parse(localStorage.getItem('fk4_abs')||'{}'); }
+function saveAbs(){
+  localStorage.setItem('fk4_abs', JSON.stringify({
+    name: document.getElementById('absName')?.value||'',
+    adr:  document.getElementById('absAdr')?.value||'',
+    email:document.getElementById('absEmail')?.value||'',
+    web:  document.getElementById('absWeb')?.value||'',
+    iban: document.getElementById('absIBAN')?.value||'',
+    stnr: document.getElementById('absStNr')?.value||''
+  }));
+}
+function loadAbs(){
+  const a=getAbs();
+  ['absName','absAdr','absEmail','absWeb','absIBAN','absStNr'].forEach(id=>{
+    const el=document.getElementById(id); if(el&&a[id.replace('abs','').toLowerCase()]) el.value=a[id.replace('abs','').toLowerCase()]||'';
+  });
+  // map correctly
+  if(document.getElementById('absName')&&a.name) document.getElementById('absName').value=a.name;
+  if(document.getElementById('absAdr')&&a.adr) document.getElementById('absAdr').value=a.adr;
+  if(document.getElementById('absEmail')&&a.email) document.getElementById('absEmail').value=a.email;
+  if(document.getElementById('absWeb')&&a.web) document.getElementById('absWeb').value=a.web;
+  if(document.getElementById('absIBAN')&&a.iban) document.getElementById('absIBAN').value=a.iban;
+  if(document.getElementById('absStNr')&&a.stnr) document.getElementById('absStNr').value=a.stnr;
+}
+
+function addRPos(){
+  rPositionen.push({id:Date.now(), desc:'', menge:1, preis:0});
+  renderRPos();
+}
+function delRPos(id){
+  if(rPositionen.length<=1){toast('Mindestens eine Position nötig');return;}
+  rPositionen=rPositionen.filter(p=>p.id!==id);
+  renderRPos();
+}
+function updRPos(id,field,val){
+  const p=rPositionen.find(x=>x.id===id);
+  if(p) p[field]=field==='menge'||field==='preis'?parseFloat(val)||0:val;
+  renderRGesamtInline();
+}
+function renderRPos(){
+  const el=document.getElementById('rPosListe'); if(!el)return;
+  el.innerHTML=rPositionen.map(p=>`
+    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+      <input type="text" value="${p.desc}" placeholder="Leistungsbeschreibung" onchange="updRPos(${p.id},'desc',this.value)" style="flex:2;font-size:.82rem;padding:7px 10px">
+      <input type="number" value="${p.menge}" min="0.5" step="0.5" onchange="updRPos(${p.id},'menge',this.value)" style="width:65px;font-size:.82rem;padding:7px 8px;text-align:center" title="Menge">
+      <input type="number" value="${p.preis}" min="0" step="0.01" onchange="updRPos(${p.id},'preis',this.value)" style="width:90px;font-size:.82rem;padding:7px 8px;text-align:right" placeholder="Preis €">
+      <span style="width:80px;text-align:right;font-size:.82rem;font-weight:400;color:var(--brown)">${fmt(p.menge*p.preis)}</span>
+      <button onclick="delRPos(${p.id})" style="background:none;border:none;color:var(--terra);cursor:pointer;font-size:.9rem">✕</button>
+    </div>`).join('');
+  renderRGesamtInline();
+}
+function renderRGesamtInline(){
+  const total=rPositionen.reduce((s,p)=>s+p.menge*p.preis,0);
+  const el=document.getElementById('rGesamt'); if(el) el.textContent=fmt(total);
+}
+
+function nextRNr(){
+  const list=getRechnungen();
+  const yr=new Date().getFullYear();
+  const count=(list.filter(r=>r.datum&&r.datum.startsWith(yr)).length+1);
+  return yr+'-'+String(count).padStart(3,'0');
+}
+
+function rechnungSpeichern(){
+  const nr=document.getElementById('rNr').value.trim();
+  const kunde=document.getElementById('rKunde').value.trim();
+  if(!nr||!kunde){toast('Bitte Rechnungs-Nr. und Kunde ausfüllen');return;}
+  const total=rPositionen.reduce((s,p)=>s+p.menge*p.preis,0);
+  const r={
+    id:Date.now(), nr, datum:document.getElementById('rDat').value,
+    fällig:document.getElementById('rFäl').value, kunde,
+    adresse:document.getElementById('rAdresse').value,
+    positionen:[...rPositionen], gesamt:total,
+    zahlhinweis:document.getElementById('rZahlhinweis').value,
+    status:'offen', abs:getAbs()
+  };
+  const list=getRechnungen(); list.push(r); saveRechnungen(list);
+  renderRechnungListe();
+  // Auto-Buchung anlegen
+  if(confirm('Rechnung gespeichert! Soll die Einnahme auch als Buchung erfasst werden?')){
+    data.push({id:Date.now()+1,typ:'einnahme',datum:r.datum,betrag:total,
+      desc:'Rechnung '+nr+' — '+kunde,kat:'Coaching',konto:'Sparkasse',skr:'8000',steuer:'ku',notiz:'Rechnung '+nr});
+    data.sort((a,b)=>b.datum.localeCompare(a.datum));
+    persist(); refresh();
+  }
+  // Reset
+  rPositionen=[{id:1,desc:'',menge:1,preis:0}];
+  renderRPos();
+  document.getElementById('rNr').value=nextRNr();
+  document.getElementById('rKunde').value='';
+  document.getElementById('rAdresse').value='';
+  toast('✓ Rechnung '+nr+' gespeichert');
+}
+
+function rechnungDrucken(){
+  const nr=document.getElementById('rNr').value||'Entwurf';
+  const kunde=document.getElementById('rKunde').value||'—';
+  const adr=document.getElementById('rAdresse').value||'';
+  const dat=document.getElementById('rDat').value;
+  const fäl=document.getElementById('rFäl').value;
+  const hint=document.getElementById('rZahlhinweis').value;
+  const total=rPositionen.reduce((s,p)=>s+p.menge*p.preis,0);
+  const abs=getAbs();
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <style>
+    body{font-family:'Georgia',serif;max-width:750px;margin:40px auto;color:#3a2418;font-size:14px;line-height:1.6;}
+    .head{display:flex;justify-content:space-between;margin-bottom:40px;}
+    .abs{font-size:.85rem;color:#8a7060;}
+    .emp{margin-bottom:30px;}
+    .title{font-size:1.8rem;font-weight:300;letter-spacing:.05em;color:#5a3224;margin-bottom:4px;}
+    .meta{font-size:.85rem;color:#8a7060;margin-bottom:30px;}
+    table{width:100%;border-collapse:collapse;margin:20px 0;}
+    th{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#8a7060;padding:8px 10px;border-bottom:2px solid #d8cfc6;text-align:left;}
+    td{padding:9px 10px;border-bottom:1px solid #f0ebe6;}
+    .tr{text-align:right;}
+    .total-row td{font-weight:700;font-size:1.05rem;border-top:2px solid #5a3224;border-bottom:none;padding-top:12px;}
+    .footer{margin-top:40px;font-size:.78rem;color:#8a7060;border-top:1px solid #d8cfc6;padding-top:16px;}
+    .paragraph19{background:#f7f3ee;border-left:3px solid #c57f63;padding:10px 14px;margin:20px 0;font-size:.8rem;}
+    @media print{body{margin:20px;}}
+  </style></head><body>
+  <div class="head">
+    <div><div style="font-family:serif;font-size:1.4rem;letter-spacing:.15em;color:#5a3224;text-transform:uppercase">${abs.name||'Fühlkraft'}</div>
+    <div class="abs">${abs.adr||''}<br>${abs.email||''} · ${abs.web||''}</div></div>
+    <div style="text-align:right"><div class="title">Rechnung</div><div style="font-size:.9rem;color:#8a7060">Nr. ${nr}</div></div>
+  </div>
+  <div class="emp"><strong>${kunde}</strong><br><span style="font-size:.85rem;color:#8a7060">${adr}</span></div>
+  <div class="meta">Rechnungsdatum: ${dat?new Date(dat).toLocaleDateString('de-DE'):''} &nbsp;|&nbsp; Fällig: ${fäl?new Date(fäl).toLocaleDateString('de-DE'):''}</div>
+  <table><thead><tr><th style="width:50%">Leistung</th><th class="tr">Menge</th><th class="tr">Einzelpreis</th><th class="tr">Gesamt</th></tr></thead>
+  <tbody>${rPositionen.map(p=>`<tr><td>${p.desc||'—'}</td><td class="tr">${p.menge}</td><td class="tr">${fmt(p.preis)}</td><td class="tr">${fmt(p.menge*p.preis)}</td></tr>`).join('')}
+  <tr class="total-row"><td colspan="3">Gesamtbetrag</td><td class="tr">${fmt(total)}</td></tr></tbody></table>
+  <div class="paragraph19">Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen.</div>
+  <div style="margin-top:20px;font-size:.85rem">${hint}</div>
+  <div class="footer">
+    ${abs.name||''} · ${abs.adr||''}<br>
+    IBAN: ${abs.iban||'—'} · Steuernummer: ${abs.stnr||'—'}<br>
+    ${abs.email||''} · ${abs.web||''}
+  </div>
+  <script>window.onload=function(){window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+function renderRechnungListe(){
+  const list=getRechnungen();
+  const el=document.getElementById('rListe'); if(!el)return;
+  if(!list.length){el.innerHTML='<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:20px">Noch keine Rechnungen</td></tr>';return;}
+  el.innerHTML=[...list].reverse().map(r=>{
+    const heute=new Date(); const fäl=r.fällig?new Date(r.fällig):null;
+    const überfällig=fäl&&fäl<heute&&r.status==='offen';
+    return `<tr>
+      <td style="font-weight:400">${r.nr}</td>
+      <td style="color:var(--muted)">${r.datum?new Date(r.datum).toLocaleDateString('de-DE'):''}</td>
+      <td>${r.kunde}</td>
+      <td style="color:${überfällig?'var(--terra)':'var(--muted)'}">${fäl?fäl.toLocaleDateString('de-DE'):''}</td>
+      <td><span style="padding:2px 9px;border-radius:20px;font-size:.72rem;font-weight:700;background:${r.status==='bezahlt'?'#e8f5e8':überfällig?'#fef0ec':'#fff3cd'};color:${r.status==='bezahlt'?'var(--sage)':überfällig?'var(--terra)':'#856404'}">${r.status==='bezahlt'?'Bezahlt':überfällig?'Überfällig':'Offen'}</span></td>
+      <td class="tr" style="font-weight:400">${fmt(r.gesamt)}</td>
+      <td style="white-space:nowrap">
+        ${r.status==='offen'?`<button class="btn bg bs" style="color:var(--sage)" onclick="markBezahlt(${r.id})">✓ Bezahlt</button>`:''}
+        <button class="btn bg bs" style="color:var(--terra)" onclick="delRechnung(${r.id})">✕</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function markBezahlt(id){
+  const list=getRechnungen();
+  const r=list.find(x=>x.id===id);
+  if(!r)return;
+  r.status='bezahlt';
+  r.bezahltAm=new Date().toISOString().split('T')[0];
+  saveRechnungen(list);
+  renderRechnungListe();
+  renderOffenePosten();
+  toast('✓ Als bezahlt markiert');
+}
+function delRechnung(id){
+  if(!confirm('Rechnung löschen?'))return;
+  saveRechnungen(getRechnungen().filter(r=>r.id!==id));
+  renderRechnungListe();
+  renderOffenePosten();
+}
+
+// ══════════════════════════════════
+// OFFENE POSTEN
+// ══════════════════════════════════
+function renderOffenePosten(){
+  const list=getRechnungen();
+  const heute=new Date();
+  const offen=list.filter(r=>r.status==='offen');
+  const überfällig=offen.filter(r=>r.fällig&&new Date(r.fällig)<heute);
+  const bezahlt=list.filter(r=>r.status==='bezahlt');
+  const offenSum=offen.reduce((s,r)=>s+r.gesamt,0);
+  const überSum=überfällig.reduce((s,r)=>s+r.gesamt,0);
+  const bezahltSum=bezahlt.reduce((s,r)=>s+r.gesamt,0);
+  set('opOffen',fmt(offenSum));
+  set('opÜberfällig',fmt(überSum));
+  set('opBezahlt',fmt(bezahltSum));
+  const opEl=document.getElementById('opListe');
+  if(opEl) opEl.innerHTML=offen.length===0
+    ?'<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:20px">Keine offenen Posten 🎉</td></tr>'
+    :offen.map(r=>{
+      const fäl=r.fällig?new Date(r.fällig):null;
+      const tage=fäl?Math.floor((heute-fäl)/86400000):null;
+      const übf=tage!==null&&tage>0;
+      return `<tr>
+        <td style="font-weight:400">${r.nr}</td><td>${r.kunde}</td>
+        <td style="color:var(--muted)">${r.datum?new Date(r.datum).toLocaleDateString('de-DE'):''}</td>
+        <td style="color:${übf?'var(--terra)':'var(--muted)'}">${fäl?fäl.toLocaleDateString('de-DE'):''}</td>
+        <td style="font-weight:${übf?'700':'300'};color:${übf?'var(--terra)':'var(--muted)'}">${tage!==null?(übf?'+'+tage+' Tage überfällig':tage===0?'Heute fällig':(-tage)+' Tage'):''}</td>
+        <td class="tr" style="font-weight:400">${fmt(r.gesamt)}</td>
+        <td><button class="btn bg bs" style="color:var(--sage)" onclick="markBezahlt(${r.id})">✓ Bezahlt</button></td>
+      </tr>`;
+    }).join('');
+  const bpEl=document.getElementById('opBezahltListe');
+  if(bpEl) bpEl.innerHTML=bezahlt.length===0
+    ?'<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:16px">Noch keine bezahlten Rechnungen</td></tr>'
+    :[...bezahlt].reverse().map(r=>`<tr>
+      <td>${r.nr}</td><td>${r.kunde}</td>
+      <td style="color:var(--muted)">${r.bezahltAm?new Date(r.bezahltAm).toLocaleDateString('de-DE'):''}</td>
+      <td class="tr tg" style="font-weight:400">${fmt(r.gesamt)}</td>
+    </tr>`).join('');
+}
+
+// ══════════════════════════════════
+// WIEDERKEHRENDE BUCHUNGEN
+// ══════════════════════════════════
+function getWiederk(){ return JSON.parse(localStorage.getItem('fk4_wiederk')||'[]'); }
+function saveWiederkLS(w){ localStorage.setItem('fk4_wiederk', JSON.stringify(w)); }
+
+function updWKat(){
+  const t=document.getElementById('wTyp')?.value||'ausgabe';
+  const el=document.getElementById('wKat'); if(el) el.innerHTML=KATEGORIEN[t].map(k=>`<option>${k}</option>`).join('');
+}
+
+function saveWiederk(){
+  const desc=document.getElementById('wDesc').value.trim();
+  const bet=parseFloat(document.getElementById('wBet').value)||0;
+  if(!desc||!bet){toast('Bitte Beschreibung und Betrag angeben');return;}
+  const start=document.getElementById('wStart').value;
+  if(!start){toast('Bitte Startdatum angeben');return;}
+  const list=getWiederk();
+  list.push({id:Date.now(),typ:document.getElementById('wTyp').value,
+    desc,betrag:bet,kat:document.getElementById('wKat').value,
+    konto:document.getElementById('wKon').value,
+    intervall:document.getElementById('wInt').value,
+    steuer:document.getElementById('wSt').value,
+    notiz:document.getElementById('wNot').value,
+    nächstesFällig:start, aktiv:true});
+  saveWiederkLS(list);
+  renderWiederkehrend();
+  document.getElementById('wDesc').value='';
+  document.getElementById('wBet').value='';
+  toast('✓ Wiederkehrende Buchung angelegt');
+}
+
+function delWiederk(id){
+  if(!confirm('Löschen?'))return;
+  saveWiederkLS(getWiederk().filter(w=>w.id!==id));
+  renderWiederkehrend();
+}
+
+function toggleWiederk(id){
+  const list=getWiederk();
+  const w=list.find(x=>x.id===id);
+  if(w) w.aktiv=!w.aktiv;
+  saveWiederkLS(list);
+  renderWiederkehrend();
+}
+
+function nextDatum(datum, intervall){
+  const d=new Date(datum);
+  if(intervall==='monatlich') d.setMonth(d.getMonth()+1);
+  else if(intervall==='quartalsweise') d.setMonth(d.getMonth()+3);
+  else if(intervall==='jährlich') d.setFullYear(d.getFullYear()+1);
+  else if(intervall==='wöchentlich') d.setDate(d.getDate()+7);
+  return d.toISOString().split('T')[0];
+}
+
+function checkWiederkehrend(){
+  const list=getWiederk();
+  const heute=new Date().toISOString().split('T')[0];
+  let count=0;
+  list.forEach(w=>{
+    if(!w.aktiv) return;
+    while(w.nächstesFällig<=heute){
+      data.push({id:Date.now()+Math.random(),typ:w.typ,datum:w.nächstesFällig,
+        betrag:w.betrag,desc:w.desc+' (auto)',kat:w.kat,konto:w.konto,
+        skr:KAT_SKR_AUS[w.kat]||KAT_SKR_EIN[w.kat]||'4980',
+        steuer:w.steuer,notiz:'Wiederkehrend'});
+      w.nächstesFällig=nextDatum(w.nächstesFällig,w.intervall);
+      count++;
+    }
+  });
+  if(count>0){
+    data.sort((a,b)=>b.datum.localeCompare(a.datum));
+    saveWiederkLS(list);
+    persist(); refresh();
+    toast('✓ '+count+' wiederkehrende Buchung(en) eingetragen');
+  }
+}
+
+function renderWiederkehrend(){
+  updWKat();
+  const list=getWiederk();
+  const el=document.getElementById('wiederkListe'); if(!el)return;
+  if(!list.length){el.innerHTML='<span style="color:var(--muted);font-size:.8rem">Noch keine wiederkehrenden Buchungen</span>';return;}
+  el.innerHTML=`<div class="tw-wrap"><table><thead><tr><th>Beschreibung</th><th>Betrag</th><th>Intervall</th><th>Nächste Fälligkeit</th><th>Konto</th><th>Status</th><th></th></tr></thead><tbody>`+
+  list.map(w=>`<tr>
+    <td>${w.desc}</td>
+    <td style="font-weight:400;color:${w.typ==='einnahme'?'var(--sage)':'var(--terra)'}">${w.typ==='einnahme'?'+':'-'}${fmt(w.betrag)}</td>
+    <td style="color:var(--muted);font-size:.8rem">${w.intervall}</td>
+    <td style="font-weight:400">${w.nächstesFällig?new Date(w.nächstesFällig).toLocaleDateString('de-DE'):''}</td>
+    <td style="font-size:.78rem"><span style="background:var(--sand);padding:2px 8px;border-radius:20px">${w.konto}</span></td>
+    <td><span style="padding:2px 9px;border-radius:20px;font-size:.72rem;font-weight:700;background:${w.aktiv?'#e8f5e8':'#f0ebe6'};color:${w.aktiv?'var(--sage)':'var(--muted)'}">${w.aktiv?'Aktiv':'Pausiert'}</span></td>
+    <td style="white-space:nowrap">
+      <button class="btn bg bs" onclick="toggleWiederk(${w.id})" style="color:var(--muted)">${w.aktiv?'Pause':'Aktivieren'}</button>
+      <button class="btn bg bs" onclick="delWiederk(${w.id})" style="color:var(--terra)">✕</button>
+    </td>
+  </tr>`).join('')+'</tbody></table></div>';
+}
+
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+
+init();
+</script>
+</body>
+</html>
