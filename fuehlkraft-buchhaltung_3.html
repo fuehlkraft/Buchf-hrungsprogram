@@ -132,8 +132,8 @@ tr:hover td{background:#faf7f4;}
   </nav>
   <div class="aside-foot">
     <select class="yr-sel" id="yrSel" onchange="switchYear(this.value)">
-      <option value="2023">2023</option><option value="2024">2024</option>
-      <option value="2025" selected>2025</option><option value="2026">2026</option>
+      <option value="2023" selected>2023</option><option value="2024">2024</option>
+      <option value="2025">2025</option><option value="2026">2026</option>
     </select>
   </div>
 </aside>
@@ -324,6 +324,11 @@ tr:hover td{background:#faf7f4;}
       <div class="sh"><span class="st">Reverse-Charge-Buchungen</span><div class="sl"></div></div>
       <div id="rcL"><span style="color:var(--muted);font-size:.8rem">Keine RC-Buchungen</span></div>
     </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="sh"><span class="st">Durchlaufende Posten (Storno / Rückbuchungen)</span><div class="sl"></div></div>
+    <div class="notice" style="margin-bottom:12px">Rückbuchungen wegen fehlender Kontodeckung heben sich mit der ursprünglichen Lastschrift auf und verzerren nicht deinen Gewinn. Hier siehst du beide Seiten und ob sie sich wirklich ausgleichen.</div>
+    <div id="durchlaufendCheck"></div>
   </div>
 </div>
 
@@ -656,26 +661,32 @@ const SKR = {
   '4992':{ name:'Hufschmied / Hufpflege', typ:'ausgabe', kat:'Pferde & Stall', gruppe:'Pferde & Stall' },
   '4993':{ name:'Stallmiete / Pensionskosten', typ:'ausgabe', kat:'Pferde & Stall', gruppe:'Pferde & Stall' },
   '4994':{ name:'Ausrüstung / Zubehör Pferde', typ:'ausgabe', kat:'Pferde & Stall', gruppe:'Pferde & Stall' },
+  // ── DURCHLAUFENDE POSTEN ──
+  '1590':{ name:'Durchlaufende Posten (Storno/Rückbuchung)', typ:'ausgabe', kat:'Durchlaufende Posten', gruppe:'Durchlaufende Posten' },
+  '1591':{ name:'Durchlaufende Posten — Eingang', typ:'einnahme', kat:'Durchlaufende Posten', gruppe:'Durchlaufende Posten' },
+  // ── ERÖFFNUNG ──
+  '0800':{ name:'Eröffnungsbilanzkonto', typ:'einnahme', kat:'Sonstiges', gruppe:'Eröffnung' },
 };
 
 // Einnahmen-Kategorien → SKR
 const KAT_SKR_EIN = {
   'Coaching':'8000','Gruppen-Session':'8000','Ausbildung':'8000',
   'Digitale Produkte':'8400','Etsy-Verkauf':'8100','Warenverkauf':'8200',
-  'Vortrag / Workshop':'8000','Sonstige Einnahmen':'8900','Sonstiges':'8900'
+  'Vortrag / Workshop':'8000','Sonstige Einnahmen':'8900','Durchlaufende Posten':'1591','Sonstiges':'8900'
 };
 const KAT_SKR_AUS = {
   'Wareneinkauf':'3200','Porto & Versand':'4840','Raumkosten':'4210',
   'Telefon & Internet':'4810','Marketing & Werbung':'4600','Fahrtkosten':'4530',
   'Fortbildung':'4900','Büro & Verwaltung':'4710','Bankgebühren':'4970',
   'Pferde & Stall':'4993','Steuerberater':'4730','Software & Tools':'4925',
-  'Versicherungen':'4360','Personal':'4100','Sonstiges':'4980'
+  'Versicherungen':'4360','Personal':'4100','Durchlaufende Posten':'1590','Sonstiges':'4980'
 };
 
 // ══════════════════════════════════
 // BANK-ERKENNUNGSREGELN
 // ══════════════════════════════════
 const REGELN = [
+  { keys:['rückbuchung','ruckbuchung','rücklastschrift','retourlastschrift','lastschrift rückbuchung','storno'], skr:'1591', kat:'Durchlaufende Posten', typ:'einnahme', label:'Rückbuchung / Storno (Eingang)' },
   { keys:['dhl','deutsche post','hermes','ups','dpd','fedex','porto','versand','paketmarke'], skr:'4120', kat:'Porto & Versand', typ:'ausgabe', label:'DHL / Post / Versand' },
   { keys:['verpackung','karton','bubble','packmat'], skr:'4985', kat:'Porto & Versand', typ:'ausgabe', label:'Verpackungsmaterial' },
   { keys:['gebühr','entgelt','kontoführung','jahresbeitrag','bankentgelt'], skr:'4820', kat:'Bankgebühren', typ:'ausgabe', label:'Bankgebühren' },
@@ -692,15 +703,15 @@ const REGELN = [
 ];
 
 const KATEGORIEN = {
-  einnahme:['Coaching','Gruppen-Session','Ausbildung','Digitale Produkte','Etsy-Verkauf','Warenverkauf','Vortrag / Workshop','Sonstige Einnahmen','Sonstiges'],
-  ausgabe:['Wareneinkauf','Porto & Versand','Bankgebühren','Pferde & Stall','Raumkosten','Büro & Verwaltung','Marketing & Werbung','Software & Tools','Fortbildung','Fahrtkosten','Telefon & Internet','Versicherungen','Personal','Steuerberater','Sonstiges']
+  einnahme:['Coaching','Gruppen-Session','Ausbildung','Digitale Produkte','Etsy-Verkauf','Warenverkauf','Vortrag / Workshop','Sonstige Einnahmen','Durchlaufende Posten','Sonstiges'],
+  ausgabe:['Wareneinkauf','Porto & Versand','Bankgebühren','Pferde & Stall','Raumkosten','Büro & Verwaltung','Marketing & Werbung','Software & Tools','Fortbildung','Fahrtkosten','Telefon & Internet','Versicherungen','Personal','Steuerberater','Durchlaufende Posten','Sonstiges']
 };
 const MONATE=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 
 // ══════════════════════════════════
 // STATE
 // ══════════════════════════════════
-let year=new Date().getFullYear(), data=[], etsy=[];
+let year=2023, data=[], etsy=[];
 
 function init(){
   document.getElementById('bDat').value=today();
@@ -1168,6 +1179,31 @@ function renderSteuern(){
   const rcEl=document.getElementById('rcL');
   if(rcEl) rcEl.innerHTML=rcBuch.length===0?'<span style="color:var(--muted);font-size:.8rem">Keine RC-Buchungen</span>'
     :rcBuch.map(b=>'<div class="er sub"><span>'+new Date(b.datum).toLocaleDateString('de-DE')+' · '+b.desc+'</span><span>'+fmt(b.betrag)+'</span></div>').join('');
+
+  // Durchlaufende Posten Check
+  const dpBuch=all.filter(b=>b.kat==='Durchlaufende Posten');
+  const dpEl=document.getElementById('durchlaufendCheck');
+  if(dpEl){
+    if(!dpBuch.length){
+      dpEl.innerHTML='<span style="color:var(--muted);font-size:.8rem">Keine durchlaufenden Posten erfasst</span>';
+    } else {
+      const dpEin=dpBuch.filter(b=>b.typ==='einnahme').reduce((s,b)=>s+b.betrag,0);
+      const dpAus=dpBuch.filter(b=>b.typ==='ausgabe').reduce((s,b)=>s+b.betrag,0);
+      const diff=dpEin-dpAus;
+      const ausgeglichen=Math.abs(diff)<0.01;
+      dpEl.innerHTML=
+        '<div class="er"><span>Rückbuchungen (Eingang)</span><span class="tg" style="font-weight:400">'+fmt(dpEin)+'</span></div>'
+        +'<div class="er"><span>Storno-Lastschriften (Ausgang)</span><span class="tr2" style="font-weight:400">'+fmt(dpAus)+'</span></div>'
+        +'<div class="er tot"><span>Differenz</span><span style="color:'+(ausgeglichen?'var(--sage)':'var(--terra)')+'">'+(ausgeglichen?'✓ Gleicht sich aus':fmt(diff))+'</span></div>'
+        +'<div class="tw-wrap" style="margin-top:12px;max-height:180px;overflow-y:auto">'
+        +'<table><thead><tr><th>Datum</th><th>Beschreibung</th><th>Konto</th><th class="tr">Betrag</th></tr></thead><tbody>'
+        +dpBuch.map(b=>'<tr><td style="color:var(--muted);white-space:nowrap">'+new Date(b.datum).toLocaleDateString('de-DE')+'</td>'
+          +'<td style="font-size:.8rem">'+b.desc+'</td>'
+          +'<td><span style="font-size:.72rem;background:var(--sand);padding:2px 8px;border-radius:20px">'+b.konto+'</span></td>'
+          +'<td class="tr '+(b.typ==='einnahme'?'tg':'tr2')+'">'+(b.typ==='einnahme'?'+':'-')+fmt(b.betrag)+'</td></tr>').join('')
+        +'</tbody></table></div>';
+    }
+  }
 }
 
 function renderSKR(){
