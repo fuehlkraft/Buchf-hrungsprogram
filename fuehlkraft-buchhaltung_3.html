@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fühlkraft · Buchhaltung</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{--cream:#f7f3ee;--sand:#eae1d8;--terra:#c57f63;--terra-dk:#a8623e;--brown:#5a3224;--sage:#7a9e7e;--white:#fff;--text:#3a2418;--muted:#8a7060;--border:#d8cfc6;--sh:0 1px 6px rgba(58,36,24,.07);}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -126,6 +127,7 @@ tr:hover td{background:#faf7f4;}
     <div class="ni" onclick="showTab('oposten',this)"><span class="ni-ico">!</span>Offene Posten</div>
     <div class="ni" onclick="showTab('wiederk',this)"><span class="ni-ico">↺</span>Wiederkehrend</div>
     <div class="ni" onclick="showTab('schnell',this)"><span class="ni-ico">★</span>Schnell-Buchungen</div>
+    <div class="ni" onclick="showTab('eroeffnung',this)"><span class="ni-ico">◑</span>Eröffnung</div>
     <div class="ni" onclick="showTab('export',this)"><span class="ni-ico">↓</span>Export</div>
   </nav>
   <div class="aside-foot">
@@ -262,6 +264,16 @@ tr:hover td{background:#faf7f4;}
       <div class="fg"><label>CSV-Datei</label><input type="file" id="csvF" accept=".csv" onchange="csvImport()"></div>
     </div>
     <div id="csvPrev"></div>
+  </div>
+
+  <!-- KONTIST PDF IMPORT -->
+  <div class="card">
+    <div class="sh"><span class="st">Kontist Kontoauszug (PDF)</span><div class="sl"></div></div>
+    <div class="notice bl">Kontist bietet nur PDF-Kontoauszüge an. Lade hier den monatlichen Kontoauszug hoch — das Programm liest Datum, Buchungstext und Betrag direkt aus dem PDF heraus.</div>
+    <div class="fr" style="align-items:flex-end;max-width:400px">
+      <div class="fg"><label>Kontist Kontoauszug (.pdf)</label><input type="file" id="kontistF" accept=".pdf" onchange="kontistPdfImport()"></div>
+    </div>
+    <div id="kontistPrev"></div>
   </div>
   <div class="card">
     <div class="sh"><span class="st">Erkennungs-Regeln (automatisch)</span><div class="sl"></div></div>
@@ -483,6 +495,55 @@ tr:hover td{background:#faf7f4;}
   </div>
 </div>
 
+<!-- ══ ERÖFFNUNGSSALDO ══ -->
+<div id="tab-eroeffnung" class="tab-content">
+
+  <div class="notice bl" style="margin-bottom:16px">
+    <strong>Was ist ein Eröffnungssaldo?</strong><br>
+    Der Eröffnungssaldo ist der Kontostand zu Beginn eines Jahres — also das was auf dem Konto war bevor du die erste Buchung gemacht hast. Damit stimmt die Buchhaltung von Anfang an. Trag hier einmalig die Kontostände aus deinem alten Programm ein.
+  </div>
+
+  <!-- ERÖFFNUNGSSALDO PRO KONTO -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="sh"><span class="st">Kontostände zum Jahresbeginn</span><div class="sl"></div></div>
+    <div class="notice" style="margin-bottom:14px">
+      Trag hier den Kontostand vom <strong>1. Januar des gewählten Jahres</strong> ein. Das Programm bucht diese Beträge automatisch als Eröffnungsbuchung (SKR 03: 0800).
+    </div>
+    <div id="eroeffnungForm"></div>
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn bp" onclick="saveEroeffnung()">Eröffnungssalden speichern</button>
+      <button class="btn bo" onclick="eroeffnungAlsBuchung()">Als Buchungen eintragen</button>
+    </div>
+    <div style="margin-top:10px;font-size:.76rem;color:var(--muted);line-height:1.6">
+      <strong style="color:var(--brown)">Tipp:</strong> "Als Buchungen eintragen" erstellt für jedes Konto eine Eröffnungsbuchung am 01.01. des gewählten Jahres. Diese erscheinen dann in der Buchungsliste und fließen in die Auswertung ein.
+    </div>
+  </div>
+
+  <!-- ALTDATEN IMPORT -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="sh"><span class="st">Altdaten aus altem Programm importieren</span><div class="sl"></div></div>
+    <div class="notice" style="margin-bottom:14px">
+      Falls dein altes Buchhaltungsprogramm einen CSV-Export hat, kannst du ihn hier hochladen. Das Programm versucht Datum, Betrag und Beschreibung zu erkennen. Du kannst danach alles prüfen und anpassen bevor du importierst.
+    </div>
+    <div class="fr" style="align-items:flex-end">
+      <div class="fg" style="max-width:160px"><label>Konto</label>
+        <select id="altKonto"><option>Sparkasse</option><option>PayPal</option><option>Kontist</option><option>Barzahlung</option></select></div>
+      <div class="fg" style="max-width:160px"><label>Jahr der Daten</label>
+        <select id="altJahr"><option>2020</option><option>2021</option><option>2022</option><option>2023</option><option>2024</option></select></div>
+      <div class="fg"><label>CSV-Datei (aus altem Programm)</label>
+        <input type="file" id="altFile" accept=".csv,.txt,.xls,.xlsx" onchange="altImport()"></div>
+    </div>
+    <div id="altPrev"></div>
+  </div>
+
+  <!-- ÜBERSICHT ERÖFFNUNGSBUCHUNGEN -->
+  <div class="card">
+    <div class="sh"><span class="st">Eingetragene Eröffnungsbuchungen</span><div class="sl"></div></div>
+    <div id="eroeffnungListe"><span style="color:var(--muted);font-size:.8rem">Noch keine Eröffnungsbuchungen</span></div>
+  </div>
+
+</div>
+
 <!-- ══ EXPORT ══ -->
 <div id="tab-export" class="tab-content">
   <div class="notice"><strong>Kleinunternehmerin §19 UStG</strong> — EÜR · Anlage EÜR · keine USt-Voranmeldung.</div>
@@ -673,7 +734,7 @@ function persist(){
 }
 function switchYear(y){year=parseInt(y);document.getElementById('expY').textContent=year;load();}
 
-const TITLES={dashboard:'Übersicht',erfassen:'Buchung erfassen',buchungen:'Alle Buchungen',etsy:'Etsy-Import',bankimport:'Bank-Import & Zuordnung',steuern:'Steuern & Reserven',skr:'SKR 03 Kontenplan',auswertung:'Auswertung',rechnung:'Rechnungs-Generator',oposten:'Offene Posten',wiederk:'Wiederkehrende Buchungen',schnell:'Schnell-Buchungen & Belege',export:'Export & Steuer'};
+const TITLES={dashboard:'Übersicht',erfassen:'Buchung erfassen',buchungen:'Alle Buchungen',etsy:'Etsy-Import',bankimport:'Bank-Import & Zuordnung',steuern:'Steuern & Reserven',skr:'SKR 03 Kontenplan',auswertung:'Auswertung',rechnung:'Rechnungs-Generator',oposten:'Offene Posten',wiederk:'Wiederkehrende Buchungen',schnell:'Schnell-Buchungen & Belege',eroeffnung:'Eröffnungssaldo & Altdaten',export:'Export & Steuer'};
 function showTab(id,el){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
@@ -688,6 +749,7 @@ function showTab(id,el){
   if(id==='skr')renderSKR();
   if(id==='schnell'){renderSchnellListe();renderBelegListe();updSnKat();}
   if(id==='rechnung'){renderRechnungListe();}
+  if(id==='eroeffnung'){renderEroeffnung();}
   if(id==='oposten'){renderOffenePosten();}
   if(id==='wiederk'){renderWiederkehrend();}
 }
@@ -772,93 +834,115 @@ function erkenne(text){
 // CSV BANK IMPORT
 // ══════════════════════════════════
 function csvImport(){
-  const file=document.getElementById('csvF').files[0];
-  const konto=document.getElementById('csvK').value;
+  var file=document.getElementById('csvF').files[0];
+  var konto=document.getElementById('csvK').value;
   if(!file)return;
-  const reader=new FileReader();
+  var reader=new FileReader();
   reader.onload=function(e){
-    const raw=e.target.result;
-    const lines=raw.split('\n').filter(function(l){return l.trim();});
-    if(lines.length<2){document.getElementById('csvPrev').innerHTML='<div class="notice">Datei leer</div>';return;}
-
-    // Semikolon (Sparkasse) oder Komma
-    const sep=lines[0].includes(';')?';':',';
-    const hdr=lines[0].split(sep).map(function(h){return h.trim().replace(/^"|"$/g,'').toLowerCase();});
-
-    // Spalten-Indizes
-    const iDat =hdr.findIndex(function(h){return h.includes('buchungstag')||h==='datum'||h==='date'||h.includes('valuta');});
-    const iVerw=hdr.findIndex(function(h){return h.includes('verwendung')||h.includes('buchungstext')||h.includes('beschreibung');});
-    const iBet =hdr.findIndex(function(h){return h==='betrag'||h.includes('betrag')||h==='amount';});
-    const iBegu=hdr.findIndex(function(h){return h.includes('beguenstig')||h.includes('gl\u00e4ubig')||h.includes('empf\u00e4nger')||h.includes('name');});
-
-    // Fallback: Sparkasse-Standard — Buchungstag=1, Verwendungszweck=4, Betrag=15
-    const colD=iDat >=0?iDat :1;
-    const colV=iVerw>=0?iVerw:4;
-    const colB=iBet >=0?iBet :15;
-    const colG=iBegu>=0?iBegu:11;
-
-    const imported=[];
-    lines.slice(1).forEach(function(line,i){
-      const cols=line.split(sep).map(function(col){return col.trim().replace(/^"|"$/g,'');});
-      if(!cols||cols.length<3)return;
-
-      // Datum parsen DD.MM.YYYY
-      const rawD=(cols[colD]||'').trim();
-      let datum='';
-      const dm=rawD.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-      if(dm) datum=dm[3]+'-'+dm[2]+'-'+dm[1];
-      else if(/^\d{4}-\d{2}-\d{2}/.test(rawD)) datum=rawD.slice(0,10);
-      if(!datum)return;
-
-      // Betrag: Sparkasse = Punkt als Tausender, Komma als Dezimal → "1.234,56"
-      const rawB=(cols[colB]||'').trim();
-      if(!rawB||rawB==='')return;
-      const betragStr=rawB.replace(/\./g,'').replace(',','.');
-      const betrag=parseFloat(betragStr);
-      if(isNaN(betrag))return;
-
-      // Verwendungszweck + Begünstigter für Erkennung
-      const verw=(cols[colV]||'').trim();
-      const begu=(cols[colG]||'').trim();
-      const suchText=(verw+' '+begu).toLowerCase();
-
-      const typ=betrag>=0?'einnahme':'ausgabe';
-      const regel=erkenne(suchText);
-      const skrNum=regel?regel.skr:(typ==='einnahme'?'8000':'4980');
-      const kat=regel?regel.kat:(typ==='einnahme'?'Coaching':'Sonstiges');
-      const steuer=regel&&(regel.skr==='4925'||regel.skr==='4980')?'rc':'ku';
-      const desc=(verw||begu||'Sparkasse').slice(0,60);
-
-      imported.push({id:Date.now()+i+Math.random(),typ,datum,betrag:Math.abs(betrag),
-        desc,kat,konto,skr:skrNum,steuer,notiz:'Sparkasse-Import'});
-    });
-
-    window._csv=imported;
-    const prev=document.getElementById('csvPrev');
-
-    if(!imported.length){
-      prev.innerHTML='<div class="notice">Keine Buchungen erkannt.<br>Spalten erkannt: '+hdr.slice(0,6).join(' | ')+'<br>Trennzeichen: '+(sep===';'?'Semikolon':'Komma')+' · Datumsspalte: '+colD+' · Betragsspalte: '+colB+'</div>';
+    var raw=e.target.result;
+    var lines=raw.split('\n').filter(function(l){return l.trim();});
+    if(lines.length<2){
+      document.getElementById('csvPrev').innerHTML='<div class="notice">Datei leer.</div>';
       return;
     }
 
-    const einS=imported.filter(function(b){return b.typ==='einnahme';}).reduce(function(s,b){return s+b.betrag;},0);
-    const ausS=imported.filter(function(b){return b.typ==='ausgabe';}).reduce(function(s,b){return s+b.betrag;},0);
-    const rcCount=imported.filter(function(b){return b.steuer==='rc';}).length;
+    // Semikolon-getrennt, Felder in Anführungszeichen
+    function splitCSV(line){
+      var result=[]; var cur=''; var inQ=false;
+      for(var i=0;i<line.length;i++){
+        var ch=line[i];
+        if(ch==='"'){inQ=!inQ;}
+        else if(ch===';'&&!inQ){result.push(cur.trim());cur='';}
+        else cur+=ch;
+      }
+      result.push(cur.trim());
+      return result;
+    }
+
+    var hdr=splitCSV(lines[0]).map(function(h){return h.toLowerCase();});
+
+    // Spalten-Indizes aus Header
+    var colD =hdr.findIndex(function(h){return h==='buchungstag';});       if(colD <0)colD =1;
+    var colV =hdr.findIndex(function(h){return h==='verwendungszweck';});   if(colV <0)colV =4;
+    var colG =hdr.findIndex(function(h){return h.includes('beguenstig');});  if(colG <0)colG =11;
+    var colB =hdr.findIndex(function(h){return h==='betrag';});             if(colB <0)colB =14;
+    var colBT=hdr.findIndex(function(h){return h==='buchungstext';});        if(colBT<0)colBT=3;
+
+    var imported=[];
+    lines.slice(1).forEach(function(line,idx){
+      if(!line.trim())return;
+      var cols=splitCSV(line);
+      if(cols.length<colB+1)return;
+
+      // Datum: DD.MM.YY oder DD.MM.YYYY
+      var rawD=(cols[colD]||'').trim();
+      var datum='';
+      var dm2=rawD.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);   // 08.06.26
+      var dm4=rawD.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);   // 08.06.2026
+      if(dm4) datum=dm4[3]+'-'+dm4[2]+'-'+dm4[1];
+      else if(dm2) datum='20'+dm2[3]+'-'+dm2[2]+'-'+dm2[1];
+      else if(/^\d{4}-\d{2}-\d{2}/.test(rawD)) datum=rawD.slice(0,10);
+      if(!datum)return;
+
+      // Betrag: "-100,00" → -100
+      var rawB=(cols[colB]||'').trim();
+      if(!rawB||rawB===''||rawB==='-')return;
+      var betrag=parseFloat(rawB.replace(/\./g,'').replace(',','.'));
+      if(isNaN(betrag)||betrag===0)return;
+
+      // Suchtext aus Verwendungszweck + Buchungstext + Begünstigter
+      var verw =(cols[colV ]||'').trim();
+      var bucht=(cols[colBT]||'').trim();
+      var begu =(cols[colG ]||'').trim();
+      var suchText=(verw+' '+bucht+' '+begu).toLowerCase();
+
+      var typ=betrag>=0?'einnahme':'ausgabe';
+      var regel=erkenne(suchText);
+      var skrNum=regel?regel.skr:(typ==='einnahme'?'8000':'4980');
+      var kat   =regel?regel.kat:(typ==='einnahme'?'Coaching':'Sonstiges');
+      var steuer=regel&&(regel.skr==='4925'||regel.skr==='4980')?'rc':'ku';
+
+      // Beschreibung: Verwendungszweck bevorzugen, sonst Buchungstext, sonst Begünstigter
+      var desc=(verw||bucht||begu||'Import').slice(0,70);
+
+      imported.push({
+        id:Date.now()+idx+Math.random(),
+        typ:typ, datum:datum, betrag:Math.abs(betrag),
+        desc:desc, kat:kat, konto:konto,
+        skr:skrNum, steuer:steuer, notiz:konto+'-Import'
+      });
+    });
+
+    window._csv=imported;
+    var prev=document.getElementById('csvPrev');
+
+    if(!imported.length){
+      prev.innerHTML='<div class="notice">Keine Buchungen erkannt.<br>'
+        +'Header: '+hdr.slice(0,6).join(' | ')+'...<br>'
+        +'Betragsspalte '+colB+': "'+( hdr[colB]||'?')+'" · Datumsspalte '+colD+': "'+( hdr[colD]||'?')+'"</div>';
+      return;
+    }
+
+    var einS=imported.filter(function(b){return b.typ==='einnahme';}).reduce(function(s,b){return s+b.betrag;},0);
+    var ausS=imported.filter(function(b){return b.typ==='ausgabe';}).reduce(function(s,b){return s+b.betrag;},0);
+    var rcC =imported.filter(function(b){return b.steuer==='rc';}).length;
 
     var rows=imported.slice(0,15).map(function(b){
       return '<tr>'
         +'<td style="color:var(--muted);white-space:nowrap">'+new Date(b.datum).toLocaleDateString('de-DE')+'</td>'
-        +'<td style="font-size:.78rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+b.desc+'</td>'
+        +'<td style="font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+b.desc+'">'+b.desc+'</td>'
         +'<td>'+skrBadge(b.skr)+'</td>'
-        +'<td style="font-size:.76rem;color:var(--muted)">'+b.kat+'</td>'
+        +'<td style="font-size:.75rem;color:var(--muted)">'+b.kat+'</td>'
         +'<td>'+taxBadge(b.steuer)+'</td>'
         +'<td class="tr '+(b.typ==='einnahme'?'tg':'tr2')+'">'+(b.typ==='einnahme'?'+':'-')+fmt(b.betrag)+'</td>'
         +'</tr>';
     }).join('');
 
-    prev.innerHTML='<div class="notice ok"><strong>'+imported.length+' Buchungen erkannt</strong>'
-      +' &nbsp;·&nbsp; Einnahmen: '+fmt(einS)+' &nbsp;·&nbsp; Ausgaben: '+fmt(ausS)
-      +' &nbsp;·&nbsp; '+rcCount+' Reverse-Charge</div>'
+    prev.innerHTML='<div class="notice ok">'
+      +'<strong>'+imported.length+' Buchungen erkannt</strong>'
+      +' &nbsp;·&nbsp; Einnahmen: '+fmt(einS)
+      +' &nbsp;·&nbsp; Ausgaben: '+fmt(ausS)
+      +' &nbsp;·&nbsp; '+rcC+' Reverse-Charge</div>'
       +'<div class="tw-wrap" style="max-height:220px;overflow-y:auto;margin:10px 0">'
       +'<table><thead><tr><th>Datum</th><th>Beschreibung</th><th>SKR 03</th><th>Kategorie</th><th>Steuer</th><th class="tr">Betrag</th></tr></thead>'
       +'<tbody>'+rows+'</tbody></table></div>'
@@ -1682,6 +1766,437 @@ function renderWiederkehrend(){
 }
 
 
+
+// ══════════════════════════════════
+// ERÖFFNUNGSSALDO
+// ══════════════════════════════════
+var KONTEN_ALLE = ['Sparkasse','PayPal','Kontist','Barzahlung'];
+
+function getEroeffnung(){
+  return JSON.parse(localStorage.getItem('fk4_eroeffnung_'+year)||'{}');
+}
+function saveEroeffnungLS(obj){
+  localStorage.setItem('fk4_eroeffnung_'+year, JSON.stringify(obj));
+}
+
+function renderEroeffnung(){
+  var salden=getEroeffnung();
+  var html='';
+  KONTEN_ALLE.forEach(function(k){
+    var val=salden[k]||'';
+    html+='<div class="fr" style="max-width:500px;margin-bottom:4px">'
+      +'<div class="fg" style="max-width:160px"><label>'+k+'</label>'
+      +'<input type="number" id="ero_'+k+'" value="'+val+'" placeholder="0.00" step="0.01" '
+      +'style="text-align:right"></div>'
+      +'<div class="fg" style="max-width:60px;justify-content:flex-end;padding-top:22px">'
+      +'<span style="font-size:.8rem;color:var(--muted)">EUR</span></div>'
+      +'</div>';
+  });
+  var el=document.getElementById('eroeffnungForm');
+  if(el) el.innerHTML=html;
+
+  // Eröffnungsbuchungen anzeigen
+  var ebuch=data.filter(function(b){return b.notiz==='Eröffnungsbuchung';});
+  var lEl=document.getElementById('eroeffnungListe');
+  if(lEl){
+    if(!ebuch.length){
+      lEl.innerHTML='<span style="color:var(--muted);font-size:.8rem">Noch keine Eröffnungsbuchungen — klick auf "Als Buchungen eintragen"</span>';
+    } else {
+      lEl.innerHTML='<div class="tw-wrap"><table><thead><tr><th>Datum</th><th>Konto</th><th>Beschreibung</th><th class="tr">Betrag</th><th></th></tr></thead><tbody>'
+        +ebuch.map(function(b){
+          return '<tr>'
+            +'<td style="color:var(--muted)">'+new Date(b.datum).toLocaleDateString('de-DE')+'</td>'
+            +'<td><span style="font-size:.72rem;background:var(--sand);padding:2px 8px;border-radius:20px">'+b.konto+'</span></td>'
+            +'<td>'+b.desc+'</td>'
+            +'<td class="tr tg" style="font-weight:400">'+fmt(b.betrag)+'</td>'
+            +'<td><button class="btn bg bs" onclick="delEroeffnung('+b.id+')" style="color:var(--terra)">✕</button></td>'
+            +'</tr>';
+        }).join('')
+        +'</tbody></table></div>';
+    }
+  }
+}
+
+function saveEroeffnung(){
+  var obj={};
+  KONTEN_ALLE.forEach(function(k){
+    var el=document.getElementById('ero_'+k);
+    if(el&&el.value) obj[k]=parseFloat(el.value)||0;
+  });
+  saveEroeffnungLS(obj);
+  toast('✓ Eröffnungssalden gespeichert');
+}
+
+function eroeffnungAlsBuchung(){
+  // Zuerst speichern
+  saveEroeffnung();
+  var salden=getEroeffnung();
+  var datum=year+'-01-01';
+  var count=0;
+
+  // Bestehende Eröffnungsbuchungen für dieses Jahr entfernen
+  data=data.filter(function(b){
+    return !(b.notiz==='Eröffnungsbuchung' && b.datum===datum);
+  });
+
+  KONTEN_ALLE.forEach(function(k){
+    var betrag=salden[k]||0;
+    if(betrag===0)return;
+    data.push({
+      id:Date.now()+Math.random(),
+      typ:'einnahme',
+      datum:datum,
+      betrag:Math.abs(betrag),
+      desc:'Eröffnungssaldo '+k,
+      kat:'Sonstiges',
+      konto:k,
+      skr:'0800',
+      steuer:'ku',
+      notiz:'Eröffnungsbuchung'
+    });
+    count++;
+  });
+
+  data.sort(function(a,b){return b.datum.localeCompare(a.datum);});
+  persist();
+  refresh();
+  renderEroeffnung();
+  toast('✓ '+count+' Eröffnungsbuchungen zum 01.01.'+year+' eingetragen');
+}
+
+function delEroeffnung(id){
+  if(!confirm('Eröffnungsbuchung löschen?'))return;
+  data=data.filter(function(b){return b.id!==id;});
+  persist(); refresh(); renderEroeffnung();
+}
+
+// ══════════════════════════════════
+// ALTDATEN IMPORT
+// ══════════════════════════════════
+function altImport(){
+  var file=document.getElementById('altFile').files[0];
+  var konto=document.getElementById('altKonto').value;
+  var altJahrVal=document.getElementById('altJahr').value;
+  if(!file)return;
+
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var raw=e.target.result;
+    var lines=raw.split('\n').filter(function(l){return l.trim();});
+    if(lines.length<2){
+      document.getElementById('altPrev').innerHTML='<div class="notice">Datei leer oder nicht lesbar.</div>';
+      return;
+    }
+
+    // Trennzeichen erkennen
+    var sep=lines[0].includes(';')?';':',';
+
+    function splitLine(line){
+      var result=[]; var cur=''; var inQ=false;
+      for(var i=0;i<line.length;i++){
+        var ch=line[i];
+        if(ch==='"'){inQ=!inQ;}
+        else if(ch===sep&&!inQ){result.push(cur.trim());cur='';}
+        else cur+=ch;
+      }
+      result.push(cur.trim());
+      return result;
+    }
+
+    var hdr=splitLine(lines[0]).map(function(h){return h.toLowerCase().replace(/^"|"$/g,'');});
+
+    // Spalten flexibel erkennen
+    var colD=hdr.findIndex(function(h){return h.includes('datum')||h.includes('date')||h.includes('buchungstag');});
+    var colB=hdr.findIndex(function(h){return h==='betrag'||h.includes('betrag')||h==='amount'||h==='umsatz';});
+    var colDesc=hdr.findIndex(function(h){return h.includes('beschreibung')||h.includes('verwendung')||h.includes('text')||h.includes('title');});
+    if(colD<0)colD=0; if(colB<0)colB=1; if(colDesc<0)colDesc=2;
+
+    var imported=[];
+    lines.slice(1).forEach(function(line,i){
+      if(!line.trim())return;
+      var cols=splitLine(line).map(function(x){return x.replace(/^"|"$/g,'').trim();});
+      if(cols.length<2)return;
+
+      // Datum parsen — viele Formate
+      var rawD=(cols[colD]||'').trim();
+      var datum='';
+      var dm4=rawD.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      var dm2=rawD.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+      var diso=rawD.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      var dus=rawD.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if(dm4) datum=dm4[3]+'-'+dm4[2]+'-'+dm4[1];
+      else if(dm2) datum='20'+dm2[3]+'-'+dm2[2]+'-'+dm2[1];
+      else if(diso) datum=diso[0];
+      else if(dus) datum=dus[3]+'-'+dus[2]+'-'+dus[1];
+      if(!datum)return;
+
+      // Nur Buchungen aus dem gewählten Jahr
+      if(!datum.startsWith(altJahrVal))return;
+
+      // Betrag
+      var rawB=(cols[colB]||'').trim();
+      if(!rawB)return;
+      var betrag=parseFloat(rawB.replace(/\./g,'').replace(',','.'));
+      if(isNaN(betrag)||betrag===0)return;
+
+      var desc=(cols[colDesc]||'Altdaten-Import').slice(0,60);
+      var typ=betrag>=0?'einnahme':'ausgabe';
+      var regel=erkenne(desc.toLowerCase());
+      var skrNum=regel?regel.skr:(typ==='einnahme'?'8000':'4980');
+      var kat=regel?regel.kat:(typ==='einnahme'?'Coaching':'Sonstiges');
+
+      imported.push({
+        id:Date.now()+i+Math.random(),
+        typ:typ, datum:datum, betrag:Math.abs(betrag),
+        desc:desc, kat:kat, konto:konto,
+        skr:skrNum, steuer:'ku', notiz:'Altdaten-Import '+altJahrVal
+      });
+    });
+
+    window._altImport=imported;
+    var prev=document.getElementById('altPrev');
+
+    if(!imported.length){
+      prev.innerHTML='<div class="notice">Keine Buchungen für '+altJahrVal+' erkannt.<br>'
+        +'Erkannte Spalten: '+hdr.slice(0,6).join(' | ')+'<br>'
+        +'Trennzeichen: '+(sep===';'?'Semikolon':'Komma')+'</div>';
+      return;
+    }
+
+    var einS=imported.filter(function(b){return b.typ==='einnahme';}).reduce(function(s,b){return s+b.betrag;},0);
+    var ausS=imported.filter(function(b){return b.typ==='ausgabe';}).reduce(function(s,b){return s+b.betrag;},0);
+
+    var rows=imported.slice(0,10).map(function(b){
+      return '<tr>'
+        +'<td style="color:var(--muted);white-space:nowrap">'+new Date(b.datum).toLocaleDateString('de-DE')+'</td>'
+        +'<td style="font-size:.78rem">'+b.desc+'</td>'
+        +'<td style="font-size:.75rem;color:var(--muted)">'+b.kat+'</td>'
+        +'<td class="tr '+(b.typ==='einnahme'?'tg':'tr2')+'">'+(b.typ==='einnahme'?'+':'-')+fmt(b.betrag)+'</td>'
+        +'</tr>';
+    }).join('');
+
+    prev.innerHTML='<div class="notice ok" style="margin-top:12px">'
+      +'<strong>'+imported.length+' Buchungen aus '+altJahrVal+'</strong>'
+      +' &nbsp;·&nbsp; Einnahmen: '+fmt(einS)+' &nbsp;·&nbsp; Ausgaben: '+fmt(ausS)+'</div>'
+      +'<div class="tw-wrap" style="max-height:200px;overflow-y:auto;margin:10px 0">'
+      +'<table><thead><tr><th>Datum</th><th>Beschreibung</th><th>Kategorie</th><th class="tr">Betrag</th></tr></thead>'
+      +'<tbody>'+rows+'</tbody></table></div>'
+      +(imported.length>10?'<div style="color:var(--muted);font-size:.75rem;margin-bottom:8px">... und '+(imported.length-10)+' weitere</div>':'')
+      +'<div style="display:flex;gap:9px;flex-wrap:wrap">'
+      +'<button class="btn bp bs" onclick="confirmAltImport()">Alle '+imported.length+' importieren</button>'
+      +'<button class="btn bo bs" onclick="cancelAltImport()">Abbrechen</button>'
+      +'</div>';
+  };
+  reader.readAsText(file,'ISO-8859-1');
+}
+
+function confirmAltImport(){
+  if(!window._altImport||!window._altImport.length)return;
+  // In das richtige Jahr importieren
+  var altJahrVal=document.getElementById('altJahr').value;
+  var oldYear=year;
+  year=parseInt(altJahrVal);
+  var existing=JSON.parse(localStorage.getItem('fk4_'+year)||'[]');
+  existing=[...existing,...window._altImport].sort(function(a,b){return b.datum.localeCompare(a.datum);});
+  localStorage.setItem('fk4_'+year,JSON.stringify(existing));
+  year=oldYear;
+  // Wenn aktuelles Jahr = Altjahr, neu laden
+  if(oldYear===parseInt(altJahrVal)){data=[...existing];refresh();}
+  toast('✓ '+window._altImport.length+' Buchungen aus '+altJahrVal+' importiert');
+  document.getElementById('altPrev').innerHTML='<div class="notice ok">✓ Import erfolgreich in Jahr '+altJahrVal+'</div>';
+  window._altImport=null;
+}
+
+
+// ══════════════════════════════════
+// KONTIST PDF-IMPORT
+// ══════════════════════════════════
+function monatNameZuNr(name){
+  var m={'januar':'01','februar':'02','märz':'03','april':'04','mai':'05','juni':'06',
+    'juli':'07','august':'08','september':'09','oktober':'10','november':'11','dezember':'12'};
+  return m[(name||'').toLowerCase()]||null;
+}
+
+function kontistPdfImport(){
+  var file=document.getElementById('kontistF').files[0];
+  if(!file)return;
+  var prev=document.getElementById('kontistPrev');
+  prev.innerHTML='<div class="notice">PDF wird gelesen ...</div>';
+
+  if(typeof pdfjsLib==='undefined'){
+    prev.innerHTML='<div class="notice">PDF-Bibliothek konnte nicht geladen werden. Bitte Internetverbindung prüfen und Seite neu laden.</div>';
+    return;
+  }
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var typedarray=new Uint8Array(e.target.result);
+    pdfjsLib.getDocument(typedarray).promise.then(function(pdf){
+      var allText='';
+      var pagePromises=[];
+      for(var p=1;p<=pdf.numPages;p++){
+        pagePromises.push(
+          pdf.getPage(p).then(function(page){
+            return page.getTextContent();
+          }).then(function(content){
+            var pageText=content.items.map(function(item){return item.str;}).join('\n');
+            allText+=pageText+'\n';
+          })
+        );
+      }
+      Promise.all(pagePromises).then(function(){
+        parseKontistText(allText);
+      });
+    }).catch(function(err){
+      prev.innerHTML='<div class="notice">Fehler beim Lesen der PDF: '+err.message+'</div>';
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseKontistText(text){
+  var prev=document.getElementById('kontistPrev');
+  var lines=text.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
+
+  // Monat/Jahr aus "Kontoauszug" / "Januar 2023" Zeilen finden
+  var monatJahr=null;
+  for(var i=0;i<lines.length;i++){
+    var mm=lines[i].match(/^(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+(\d{4})$/i);
+    if(mm){ monatJahr={monat:monatNameZuNr(mm[1]),jahr:mm[2]}; break; }
+  }
+
+  // Buchungszeilen: Datum im Format DD.MM.YY am Zeilenanfang
+  var datumRegex=/^(\d{2})\.(\d{2})\.(\d{2})$/;
+  var betragRegex=/^([+\-]?\d{1,3}(?:\.\d{3})*,\d{2})\s*EUR$/;
+
+  var buchungen=[];
+  var i=0;
+  while(i<lines.length){
+    var dm=lines[i].match(datumRegex);
+    if(dm){
+      var datum='20'+dm[3]+'-'+dm[2]+'-'+dm[1];
+      var datumIdx=i;
+      // Sammle die nächsten Zeilen bis zum Betrag (max 8 Zeilen als Sicherheit)
+      var textLines=[];
+      var betrag=null;
+      var j=i+1;
+      while(j<lines.length && j<i+10){
+        var bm=lines[j].match(betragRegex);
+        if(bm){
+          betrag=parseFloat(bm[1].replace(/\./g,'').replace(',','.'));
+          break;
+        }
+        // Auch reines Datum als Stop-Kriterium (nächste Buchung beginnt)
+        if(datumRegex.test(lines[j]) && j>i+1) break;
+        textLines.push(lines[j]);
+        j++;
+      }
+      if(betrag!==null){
+        // Beschreibung: erste sinnvolle Zeile (meist Name/Empfänger), Kategorie als 2. Zeile
+        var beschreibung=textLines[0]||'Kontist-Buchung';
+        var kategorie=textLines[1]||'';
+        var details=textLines.slice(2).join(' ');
+        buchungen.push({
+          datum:datum,
+          beschreibung:beschreibung,
+          kategorie:kategorie,
+          details:details,
+          betrag:betrag
+        });
+        i=j+1;
+        continue;
+      }
+    }
+    i++;
+  }
+
+  if(!buchungen.length){
+    prev.innerHTML='<div class="notice">Keine Buchungen im PDF erkannt.<br>'
+      +'Erkannter Text (Auszug): <pre style="font-size:.7rem;white-space:pre-wrap;max-height:120px;overflow-y:auto;background:var(--cream);padding:8px;border-radius:6px;margin-top:6px">'
+      +lines.slice(0,20).join('\n')+'</pre></div>';
+    return;
+  }
+
+  var imported=buchungen.map(function(b,idx){
+    var suchText=(b.beschreibung+' '+b.kategorie+' '+b.details).toLowerCase();
+    var typ=b.betrag>=0?'einnahme':'ausgabe';
+    var regel=erkenne(suchText);
+    var skrNum=regel?regel.skr:(typ==='einnahme'?'8000':'4980');
+    var kat=regel?regel.kat:(typ==='einnahme'?'Coaching':'Sonstiges');
+    var steuer=regel&&(regel.skr==='4925'||regel.skr==='4980')?'rc':'ku';
+    return {
+      id:Date.now()+idx+Math.random(),
+      typ:typ, datum:b.datum, betrag:Math.abs(b.betrag),
+      desc:b.beschreibung.slice(0,70), kat:kat, konto:'Kontist',
+      skr:skrNum, steuer:steuer, notiz:'Kontist-PDF-Import'
+    };
+  });
+
+  window._kontistImport=imported;
+
+  var einS=imported.filter(function(b){return b.typ==='einnahme';}).reduce(function(s,b){return s+b.betrag;},0);
+  var ausS=imported.filter(function(b){return b.typ==='ausgabe';}).reduce(function(s,b){return s+b.betrag;},0);
+  var monatLabel=monatJahr?(monatJahr.monat+'/'+monatJahr.jahr):'';
+
+  var rows=imported.map(function(b){
+    return '<tr>'
+      +'<td style="color:var(--muted);white-space:nowrap">'+new Date(b.datum).toLocaleDateString('de-DE')+'</td>'
+      +'<td style="font-size:.78rem">'+b.desc+'</td>'
+      +'<td>'+skrBadge(b.skr)+'</td>'
+      +'<td style="font-size:.75rem;color:var(--muted)">'+b.kat+'</td>'
+      +'<td>'+taxBadge(b.steuer)+'</td>'
+      +'<td class="tr '+(b.typ==='einnahme'?'tg':'tr2')+'">'+(b.typ==='einnahme'?'+':'-')+fmt(b.betrag)+'</td>'
+      +'</tr>';
+  }).join('');
+
+  prev.innerHTML='<div class="notice ok">'
+    +'<strong>'+imported.length+' Buchungen erkannt</strong>'+(monatLabel?' &nbsp;·&nbsp; '+monatLabel:'')
+    +' &nbsp;·&nbsp; Einnahmen: '+fmt(einS)+' &nbsp;·&nbsp; Ausgaben: '+fmt(ausS)+'</div>'
+    +'<div class="tw-wrap" style="max-height:220px;overflow-y:auto;margin:10px 0">'
+    +'<table><thead><tr><th>Datum</th><th>Beschreibung</th><th>SKR 03</th><th>Kategorie</th><th>Steuer</th><th class="tr">Betrag</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody></table></div>'
+    +'<button class="btn bp bs" onclick="confirmKontistImport()">Alle '+imported.length+' importieren</button>'
+    +'<button class="btn bo bs" style="margin-left:8px" onclick="cancelKontistImport()">Abbrechen</button>';
+}
+
+function confirmKontistImport(){
+  if(!window._kontistImport||!window._kontistImport.length)return;
+  // Prüfen ob Buchungen ins aktuelle Jahr passen, sonst ins passende Jahr einsortieren
+  var grouped={};
+  window._kontistImport.forEach(function(b){
+    var y=b.datum.slice(0,4);
+    if(!grouped[y])grouped[y]=[];
+    grouped[y].push(b);
+  });
+  var totalCount=0;
+  Object.keys(grouped).forEach(function(y){
+    var yNum=parseInt(y);
+    if(yNum===year){
+      data=[...data,...grouped[y]].sort(function(a,b){return b.datum.localeCompare(a.datum);});
+      persist();
+    } else {
+      var existing=JSON.parse(localStorage.getItem('fk4_'+y)||'[]');
+      existing=[...existing,...grouped[y]].sort(function(a,b){return b.datum.localeCompare(a.datum);});
+      localStorage.setItem('fk4_'+y,JSON.stringify(existing));
+    }
+    totalCount+=grouped[y].length;
+  });
+  refresh();
+  document.getElementById('kontistPrev').innerHTML='<div class="notice ok">✓ '+totalCount+' Buchungen importiert</div>';
+  toast('✓ '+totalCount+' Kontist-Buchungen importiert');
+  window._kontistImport=null;
+}
+
+function cancelKontistImport(){
+  document.getElementById('kontistPrev').innerHTML='';
+  window._kontistImport=null;
+}
+
+function cancelAltImport(){
+  document.getElementById('altPrev').innerHTML='';
+  window._altImport=null;
+}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
 init();
