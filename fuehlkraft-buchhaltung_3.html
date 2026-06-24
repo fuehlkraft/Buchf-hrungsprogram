@@ -108,6 +108,69 @@ tr:hover td{background:#faf7f4;}
 @media(max-width:900px){.g4,.g5,.g3{grid-template-columns:repeat(2,1fr);}.g2{grid-template-columns:1fr;}}
 @media(max-width:700px){aside{width:100%;height:auto;position:static;}.main{margin-left:0;}.logo,.aside-foot{display:none;}nav{display:flex;flex-direction:row;padding:0;overflow-x:auto;}.ni{padding:12px 14px;border-left:none;border-bottom:3px solid transparent;flex-shrink:0;}.ni.active{border-bottom-color:var(--terra);border-left:none;}.app{flex-direction:column;}.content{padding:16px;}.topbar{padding:0 14px;}}
 @media print{aside,.topbar,.btn,nav,.notice{display:none!important;}.main{margin-left:0;}.content{padding:0;}}
+
+/* ══ KI-ASSISTENT ══ */
+.ki-fab{
+  position:fixed; bottom:24px; right:24px; z-index:500;
+  width:56px; height:56px; border-radius:50%;
+  background:var(--terra); color:white;
+  border:none; cursor:pointer;
+  box-shadow:0 4px 16px rgba(197,127,99,.4);
+  font-size:1.4rem;
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .2s;
+}
+.ki-fab:hover{ transform:scale(1.08); background:var(--terra-dk); }
+.ki-fab.hidden{ display:none; }
+
+.ki-panel{
+  position:fixed; bottom:24px; right:24px; z-index:501;
+  width:380px; max-width:92vw; height:560px; max-height:80vh;
+  background:var(--white); border-radius:16px;
+  box-shadow:0 8px 40px rgba(58,36,24,.25);
+  display:flex; flex-direction:column; overflow:hidden;
+  transform:translateY(16px) scale(.97); opacity:0; pointer-events:none;
+  transition:all .2s ease;
+}
+.ki-panel.open{ transform:translateY(0) scale(1); opacity:1; pointer-events:all; }
+
+.ki-head{
+  background:linear-gradient(135deg, var(--terra) 0%, var(--terra-dk) 100%);
+  color:white; padding:16px 18px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.ki-head-title{font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:400;}
+.ki-head-sub{font-size:.68rem; opacity:.85; letter-spacing:.04em;}
+.ki-close{ background:rgba(255,255,255,.15); border:none; color:white; width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:.9rem; }
+.ki-close:hover{ background:rgba(255,255,255,.28); }
+
+.ki-body{ flex:1; overflow-y:auto; padding:16px; background:var(--cream); display:flex; flex-direction:column; gap:10px; }
+.ki-msg{ max-width:85%; padding:10px 13px; border-radius:12px; font-size:.83rem; line-height:1.55; }
+.ki-msg.bot{ background:var(--white); border:1px solid var(--border); color:var(--text); align-self:flex-start; border-bottom-left-radius:3px; }
+.ki-msg.user{ background:var(--terra); color:white; align-self:flex-end; border-bottom-right-radius:3px; }
+.ki-msg.bot p{ margin-bottom:6px; }
+.ki-msg.bot p:last-child{ margin-bottom:0; }
+.ki-typing{ display:flex; gap:4px; padding:10px 13px; align-self:flex-start; }
+.ki-typing span{ width:6px; height:6px; border-radius:50%; background:var(--muted); animation:kiPulse 1.2s infinite; }
+.ki-typing span:nth-child(2){ animation-delay:.2s; }
+.ki-typing span:nth-child(3){ animation-delay:.4s; }
+@keyframes kiPulse{ 0%,100%{opacity:.3;transform:translateY(0);} 50%{opacity:1;transform:translateY(-3px);} }
+
+.ki-suggest{ display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 12px; }
+.ki-chip{ background:var(--white); border:1px solid var(--border); color:var(--terra-dk); border-radius:20px; padding:6px 12px; font-size:.72rem; cursor:pointer; font-weight:600; }
+.ki-chip:hover{ background:var(--terra-light); border-color:var(--terra); }
+
+.ki-input-row{ display:flex; gap:8px; padding:12px 14px; border-top:1px solid var(--border); background:var(--white); }
+.ki-input{ flex:1; border:1px solid var(--border); border-radius:20px; padding:9px 14px; font-family:'Lato',sans-serif; font-size:.83rem; outline:none; background:var(--cream); }
+.ki-input:focus{ border-color:var(--terra); background:var(--white); }
+.ki-send{ width:38px; height:38px; border-radius:50%; background:var(--terra); border:none; color:white; cursor:pointer; flex-shrink:0; font-size:.95rem; }
+.ki-send:hover{ background:var(--terra-dk); }
+.ki-send:disabled{ background:var(--border); cursor:default; }
+
+@media(max-width:500px){
+  .ki-panel{ width:94vw; right:3vw; bottom:14px; height:72vh; }
+  .ki-fab{ right:18px; bottom:18px; }
+}
 </style>
 </head>
 <body>
@@ -595,6 +658,31 @@ tr:hover td{background:#faf7f4;}
 </div><!-- /main -->
 </div><!-- /app -->
 <div class="toast" id="toast"></div>
+
+<!-- ══ KI-ASSISTENT ══ -->
+<button class="ki-fab" id="kiFab" onclick="kiOpen()" title="Fragen an deinen Buchhaltungs-Assistenten">💬</button>
+
+<div class="ki-panel" id="kiPanel">
+  <div class="ki-head">
+    <div>
+      <div class="ki-head-title">Fühlkraft Assistent</div>
+      <div class="ki-head-sub">Fragen zu deiner Buchhaltung</div>
+    </div>
+    <button class="ki-close" onclick="kiClose()">✕</button>
+  </div>
+  <div class="ki-body" id="kiBody">
+    <div class="ki-msg bot">Hallo! Ich kenne deine aktuellen Zahlen aus diesem Buchhaltungsprogramm und kann dir bei Fragen zu SKR 03, Steuern, Kleinunternehmer-Regelung oder deinen Buchungen helfen. Was möchtest du wissen?</div>
+  </div>
+  <div class="ki-suggest" id="kiSuggest">
+    <span class="ki-chip" onclick="kiAsk('Wie viel Steuer-Reserve sollte ich aktuell zurücklegen?')">Steuer-Reserve?</span>
+    <span class="ki-chip" onclick="kiAsk('Bin ich noch im Kleinunternehmer-Limit?')">KU-Grenze?</span>
+    <span class="ki-chip" onclick="kiAsk('Welches SKR-03-Konto passt zu Pferdefutter?')">SKR-Konto finden</span>
+  </div>
+  <div class="ki-input-row">
+    <input type="text" class="ki-input" id="kiInput" placeholder="Frage eingeben …" onkeydown="if(event.key==='Enter')kiSend()">
+    <button class="ki-send" id="kiSendBtn" onclick="kiSend()">↑</button>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════
@@ -2233,6 +2321,131 @@ function cancelAltImport(){
   document.getElementById('altPrev').innerHTML='';
   window._altImport=null;
 }
+// ══════════════════════════════════
+// KI-ASSISTENT
+// ══════════════════════════════════
+var kiHistory = [];
+var kiIsOpen = false;
+
+function kiOpen(){
+  document.getElementById('kiPanel').classList.add('open');
+  document.getElementById('kiFab').classList.add('hidden');
+  kiIsOpen = true;
+  setTimeout(function(){ document.getElementById('kiInput').focus(); }, 150);
+}
+function kiClose(){
+  document.getElementById('kiPanel').classList.remove('open');
+  document.getElementById('kiFab').classList.remove('hidden');
+  kiIsOpen = false;
+}
+
+function kiAsk(text){
+  document.getElementById('kiInput').value = text;
+  kiSend();
+}
+
+function kiBuildContext(){
+  var all = allB();
+  var ein = sum(all,'einnahme'), aus = sum(all,'ausgabe'), gew = ein-aus;
+  var rueckl = getRueckl();
+  var ruecklTotal = rueckl.reduce(function(s,r){ return s + (gew>0? gew*(r.proz/100):0); }, 0);
+  var ruecklProz = rueckl.reduce(function(s,r){ return s+r.proz; }, 0);
+  var kuProz = Math.min(100, (ein/25000)*100);
+  var rc = all.filter(function(b){ return b.steuer==='rc'||b.steuer==='etsy_rc'; }).reduce(function(s,b){ return s+b.betrag; }, 0);
+  var offeneRechnungen = getRechnungen().filter(function(r){ return r.status==='offen'; });
+  var offenSum = offeneRechnungen.reduce(function(s,r){ return s+r.gesamt; }, 0);
+
+  // Letzte 5 Buchungen als Beispiel
+  var letzte = all.slice(0,5).map(function(b){
+    return b.datum+': '+b.desc+' ('+b.kat+', SKR '+(b.skr||'-')+') = '+(b.typ==='einnahme'?'+':'-')+b.betrag.toFixed(2)+' EUR';
+  }).join('\n');
+
+  return 'Du bist ein hilfsbereiter Buchhaltungs-Assistent für Nadine, Inhaberin von "Fühlkraft" (Pferdecoaching, Kleinunternehmerin nach §19 UStG, Buchhaltung nach SKR 03). '
+    + 'Antworte auf Deutsch, warm und klar, ohne komplizierte Fachsprache wenn nicht nötig. Halte Antworten kurz (max. 4-5 Sätze) außer bei expliziter Detailfrage. '
+    + 'Du bist kein Steuerberater — bei konkreten rechtlichen/steuerlichen Entscheidungen verweise freundlich auf den Steuerberater, gib aber trotzdem die fachlich korrekte Einschätzung.\n\n'
+    + 'AKTUELLE ZAHLEN (Jahr '+year+'):\n'
+    + '- Einnahmen: '+ein.toFixed(2)+' EUR\n'
+    + '- Ausgaben: '+aus.toFixed(2)+' EUR\n'
+    + '- Gewinn: '+gew.toFixed(2)+' EUR\n'
+    + '- Kleinunternehmer-Grenze 25.000 EUR: aktuell '+kuProz.toFixed(1)+'% ausgeschöpft\n'
+    + '- Rücklagen konfiguriert: '+ruecklProz+'% vom Gewinn ('+rueckl.map(function(r){return r.name+' '+r.proz+'%';}).join(', ')+') = ca. '+ruecklTotal.toFixed(2)+' EUR\n'
+    + '- Reverse-Charge-Ausgaben gesamt: '+rc.toFixed(2)+' EUR\n'
+    + '- Offene Rechnungen: '+offeneRechnungen.length+' Stück, '+offenSum.toFixed(2)+' EUR\n'
+    + '- Letzte Buchungen:\n'+(letzte||'(keine Buchungen erfasst)')+'\n\n'
+    + 'SKR-03-KONTEN-ÜBERSICHT (zur Orientierung bei Fragen zur Kontierung):\n'
+    + Object.entries(SKR).map(function(e){return e[0]+' = '+e[1].name+' ('+(e[1].typ==='einnahme'?'Einnahme':'Ausgabe')+')';}).join('\n');
+}
+
+function kiAddMsg(text, sender){
+  var body = document.getElementById('kiBody');
+  var div = document.createElement('div');
+  div.className = 'ki-msg ' + sender;
+  // Einfache Markdown-ähnliche Absätze
+  var paragraphs = text.split('\n').filter(function(p){return p.trim();});
+  if(sender==='bot' && paragraphs.length>1){
+    div.innerHTML = paragraphs.map(function(p){return '<p>'+p+'</p>';}).join('');
+  } else {
+    div.textContent = text;
+  }
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+  return div;
+}
+
+function kiSend(){
+  var input = document.getElementById('kiInput');
+  var text = input.value.trim();
+  if(!text) return;
+
+  // Vorschläge nach erster Frage ausblenden
+  var sugg = document.getElementById('kiSuggest');
+  if(sugg) sugg.style.display = 'none';
+
+  kiAddMsg(text, 'user');
+  input.value = '';
+  document.getElementById('kiSendBtn').disabled = true;
+
+  var body = document.getElementById('kiBody');
+  var typing = document.createElement('div');
+  typing.className = 'ki-typing';
+  typing.id = 'kiTyping';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  body.appendChild(typing);
+  body.scrollTop = body.scrollHeight;
+
+  kiHistory.push({role:'user', content:text});
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-6',
+      max_tokens:600,
+      system: kiBuildContext(),
+      messages: kiHistory.slice(-10)
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var t = document.getElementById('kiTyping');
+    if(t) t.remove();
+    var answer = '';
+    if(data && data.content){
+      answer = data.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('\n');
+    }
+    if(!answer) answer = 'Entschuldige, ich konnte keine Antwort generieren. Versuch es gern noch einmal.';
+    kiAddMsg(answer, 'bot');
+    kiHistory.push({role:'assistant', content:answer});
+    document.getElementById('kiSendBtn').disabled = false;
+  })
+  .catch(function(err){
+    var t = document.getElementById('kiTyping');
+    if(t) t.remove();
+    kiAddMsg('Es gab ein Problem bei der Verbindung. Bitte versuch es gleich noch einmal.', 'bot');
+    document.getElementById('kiSendBtn').disabled = false;
+  });
+}
+
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
 init();
