@@ -192,6 +192,7 @@ tr:hover td{background:#faf7f4;}
     <div class="ni" onclick="showTab('schnell',this)"><span class="ni-ico">★</span>Schnell-Buchungen</div>
     <div class="ni" onclick="showTab('eroeffnung',this)"><span class="ni-ico">◑</span>Eröffnung</div>
     <div class="ni" onclick="showTab('export',this)"><span class="ni-ico">↓</span>Export</div>
+    <div class="ni" onclick="showTab('einstellungen',this)"><span class="ni-ico">⚙</span>Einstellungen</div>
   </nav>
   <div class="aside-foot">
     <select class="yr-sel" id="yrSel" onchange="switchYear(this.value)">
@@ -654,6 +655,44 @@ tr:hover td{background:#faf7f4;}
   </div>
 </div>
 
+<!-- ══ EINSTELLUNGEN ══ -->
+<div id="tab-einstellungen" class="tab-content">
+
+  <div class="card" style="max-width:640px">
+    <div class="sh"><span class="st">KI-Assistent verbinden</span><div class="sl"></div></div>
+    <div class="notice bl" style="margin-bottom:14px">
+      <strong>Wichtig zur Sicherheit:</strong> Dein API-Key wird ausschließlich lokal in <em>deinem</em> Browser gespeichert — nie an irgendeinen Server außer Anthropic gesendet, nie in der Datei selbst gespeichert. Da diese Seite öffentlich auf GitHub Pages läuft, solltest du den Schlüssel nur auf Geräten eingeben, denen du vertraust, und ihn nicht weitergeben.
+    </div>
+    <div class="fr">
+      <div class="fg">
+        <label>Anthropic API-Key</label>
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+      </div>
+    </div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:4px">
+      <button class="btn bp" onclick="saveApiKey()">Speichern</button>
+      <button class="btn bo" onclick="testApiKey()">Verbindung testen</button>
+      <button class="btn bo" onclick="clearApiKey()" style="color:var(--terra-dk)">Key entfernen</button>
+    </div>
+    <div id="apiKeyStatus" style="margin-top:12px;font-size:.8rem"></div>
+
+    <div style="margin-top:16px;padding:12px 14px;background:var(--sand);border-radius:8px;font-size:.76rem;color:var(--muted);line-height:1.7">
+      <strong style="color:var(--brown)">Wo bekomme ich einen API-Key?</strong><br>
+      Auf <a href="https://console.anthropic.com" target="_blank" style="color:var(--terra-dk)">console.anthropic.com</a> registrieren → "API Keys" → "Create Key". Es entstehen kleine Kosten pro Anfrage an die KI (nach Verbrauch, kein Abo). Für gelegentliche Fragen reichen meist wenige Cent pro Monat.
+    </div>
+  </div>
+
+  <div class="card" style="max-width:640px;margin-top:14px">
+    <div class="sh"><span class="st">Über dieses Programm</span><div class="sl"></div></div>
+    <div style="font-size:.82rem;color:var(--muted);line-height:1.8">
+      Fühlkraft Buchhaltung — gebaut für Nadine Kernig (Fühlkraft), Kleinunternehmerin nach §19 UStG.<br>
+      SKR 03 Kontenrahmen · Etsy-, Sparkasse- und Kontist-Import · Rechnungsgenerator · Rücklagen-Rechner.<br>
+      Alle Daten werden lokal im Browser gespeichert (localStorage) — regelmäßige Sicherung im Export-Tab empfohlen.
+    </div>
+  </div>
+
+</div>
+
 </div><!-- /content -->
 </div><!-- /main -->
 </div><!-- /app -->
@@ -833,7 +872,7 @@ function persist(){
 }
 function switchYear(y){year=parseInt(y);document.getElementById('expY').textContent=year;load();}
 
-const TITLES={dashboard:'Übersicht',erfassen:'Buchung erfassen',buchungen:'Alle Buchungen',etsy:'Etsy-Import',bankimport:'Bank-Import & Zuordnung',steuern:'Steuern & Reserven',skr:'SKR 03 Kontenplan',auswertung:'Auswertung',rechnung:'Rechnungs-Generator',oposten:'Offene Posten',wiederk:'Wiederkehrende Buchungen',schnell:'Schnell-Buchungen & Belege',eroeffnung:'Eröffnungssaldo & Altdaten',export:'Export & Steuer'};
+const TITLES={dashboard:'Übersicht',erfassen:'Buchung erfassen',buchungen:'Alle Buchungen',etsy:'Etsy-Import',bankimport:'Bank-Import & Zuordnung',steuern:'Steuern & Reserven',skr:'SKR 03 Kontenplan',auswertung:'Auswertung',rechnung:'Rechnungs-Generator',oposten:'Offene Posten',wiederk:'Wiederkehrende Buchungen',schnell:'Schnell-Buchungen & Belege',eroeffnung:'Eröffnungssaldo & Altdaten',export:'Export & Steuer',einstellungen:'Einstellungen'};
 function showTab(id,el){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
@@ -849,6 +888,7 @@ function showTab(id,el){
   if(id==='schnell'){renderSchnellListe();renderBelegListe();updSnKat();}
   if(id==='rechnung'){renderRechnungListe();}
   if(id==='eroeffnung'){renderEroeffnung();}
+  if(id==='einstellungen'){renderEinstellungen();}
   if(id==='oposten'){renderOffenePosten();}
   if(id==='wiederk'){renderWiederkehrend();}
 }
@@ -2322,6 +2362,64 @@ function cancelAltImport(){
   window._altImport=null;
 }
 // ══════════════════════════════════
+// API-KEY VERWALTUNG (EINSTELLUNGEN)
+// ══════════════════════════════════
+function getApiKey(){
+  return localStorage.getItem('fk4_apikey') || '';
+}
+function saveApiKey(){
+  var val = document.getElementById('apiKeyInput').value.trim();
+  if(!val){
+    document.getElementById('apiKeyStatus').innerHTML = '<span style="color:var(--terra-dk)">Bitte einen Key eingeben.</span>';
+    return;
+  }
+  localStorage.setItem('fk4_apikey', val);
+  document.getElementById('apiKeyStatus').innerHTML = '<span style="color:var(--sage)">✓ Key gespeichert — der Assistent kann jetzt verwendet werden.</span>';
+  toast('✓ API-Key gespeichert');
+}
+function clearApiKey(){
+  if(!confirm('API-Key wirklich entfernen?'))return;
+  localStorage.removeItem('fk4_apikey');
+  document.getElementById('apiKeyInput').value='';
+  document.getElementById('apiKeyStatus').innerHTML = '<span style="color:var(--muted)">Key entfernt.</span>';
+  toast('Key entfernt');
+}
+function testApiKey(){
+  var key = document.getElementById('apiKeyInput').value.trim() || getApiKey();
+  if(!key){
+    document.getElementById('apiKeyStatus').innerHTML = '<span style="color:var(--terra-dk)">Kein Key zum Testen vorhanden.</span>';
+    return;
+  }
+  document.getElementById('apiKeyStatus').innerHTML = '<span style="color:var(--muted)">Teste Verbindung ...</span>';
+  fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key': key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({model:'claude-sonnet-4-6', max_tokens:10, messages:[{role:'user',content:'Sag nur OK'}]})
+  })
+  .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
+  .then(function(res){
+    if(res.ok){
+      document.getElementById('apiKeyStatus').innerHTML = '<span style="color:var(--sage)">✓ Verbindung erfolgreich! Der Key funktioniert.</span>';
+    } else {
+      var msg = (res.data && res.data.error && res.data.error.message) || 'Unbekannter Fehler';
+      document.getElementById('apiKeyStatus').innerHTML = '<span style="color:var(--terra-dk)">✕ Fehler: '+msg+'</span>';
+    }
+  })
+  .catch(function(){
+    document.getElementById('apiKeyStatus').innerHTML = '<span style="color:var(--terra-dk)">✕ Verbindung fehlgeschlagen. Internetverbindung prüfen.</span>';
+  });
+}
+function renderEinstellungen(){
+  var key = getApiKey();
+  if(key) document.getElementById('apiKeyInput').value = key;
+}
+
+// ══════════════════════════════════
 // KI-ASSISTENT
 // ══════════════════════════════════
 var kiHistory = [];
@@ -2397,6 +2495,14 @@ function kiSend(){
   var text = input.value.trim();
   if(!text) return;
 
+  var apiKey = getApiKey();
+  if(!apiKey){
+    kiAddMsg(text, 'user');
+    input.value = '';
+    kiAddMsg('Es ist noch kein API-Key eingerichtet. Geh bitte in den Tab "⚙ Einstellungen" und trag dort deinen Anthropic API-Key ein, dann kann ich dir helfen.', 'bot');
+    return;
+  }
+
   // Vorschläge nach erster Frage ausblenden
   var sugg = document.getElementById('kiSuggest');
   if(sugg) sugg.style.display = 'none';
@@ -2417,7 +2523,12 @@ function kiSend(){
 
   fetch('https://api.anthropic.com/v1/messages', {
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
     body:JSON.stringify({
       model:'claude-sonnet-4-6',
       max_tokens:600,
@@ -2432,6 +2543,8 @@ function kiSend(){
     var answer = '';
     if(data && data.content){
       answer = data.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('\n');
+    } else if(data && data.error){
+      answer = 'Fehler von der API: '+data.error.message+'. Bitte prüf deinen API-Key in den Einstellungen.';
     }
     if(!answer) answer = 'Entschuldige, ich konnte keine Antwort generieren. Versuch es gern noch einmal.';
     kiAddMsg(answer, 'bot');
@@ -2441,7 +2554,7 @@ function kiSend(){
   .catch(function(err){
     var t = document.getElementById('kiTyping');
     if(t) t.remove();
-    kiAddMsg('Es gab ein Problem bei der Verbindung. Bitte versuch es gleich noch einmal.', 'bot');
+    kiAddMsg('Es gab ein Problem bei der Verbindung. Bitte prüf deinen API-Key in den Einstellungen oder versuch es gleich noch einmal.', 'bot');
     document.getElementById('kiSendBtn').disabled = false;
   });
 }
