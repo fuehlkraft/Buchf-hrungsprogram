@@ -290,7 +290,7 @@ tr:hover td{background:#faf7f4;}
       <div class="fg" style="max-width:130px"><label>SKR-Konto</label><select id="fSKR" onchange="renderTable()"><option value="">Alle</option></select></div>
     </div>
     <div class="tw-wrap">
-      <table><thead><tr><th>Datum</th><th></th><th>Beschreibung</th><th>Kategorie</th><th>SKR 03</th><th>Konto</th><th>Steuer</th><th class="tr">Betrag</th><th></th></tr></thead>
+      <table><thead><tr><th>Datum</th><th></th><th>Beschreibung</th><th>Kategorie</th><th>SKR 03</th><th>Konto</th><th>Steuer</th><th class="tr">Betrag</th><th>Beleg</th><th></th></tr></thead>
       <tbody id="buchT"></tbody></table>
     </div>
   </div>
@@ -481,7 +481,7 @@ tr:hover td{background:#faf7f4;}
   </div>
   <div class="card">
     <div class="sh"><span class="st">Gespeicherte Rechnungen</span><div class="sl"></div></div>
-    <div class="tw-wrap"><table><thead><tr><th>Nr.</th><th>Datum</th><th>Kunde</th><th>Fällig</th><th>Status</th><th class="tr">Betrag</th><th></th></tr></thead>
+    <div class="tw-wrap"><table><thead><tr><th>Nr.</th><th>Datum</th><th>Kunde</th><th>Fällig</th><th>Status</th><th class="tr">Betrag</th><th>Buchung</th><th></th></tr></thead>
     <tbody id="rListe"></tbody></table></div>
   </div>
 </div>
@@ -1254,6 +1254,7 @@ function renderTable(){
   const t=document.getElementById('fT').value,k=document.getElementById('fK').value;
   const m=document.getElementById('fM').value,sk=document.getElementById('fSKR').value;
   const src=b=>etsy.find(x=>x.id===b.id)?'e':'m';
+  const belege=getBelege();
   const f=allB().filter(b=>{
     if(t&&b.typ!==t)return false;if(k&&b.konto!==k)return false;
     if(m!==''&&new Date(b.datum).getMonth()!==parseInt(m))return false;
@@ -1262,8 +1263,10 @@ function renderTable(){
     return true;
   });
   document.getElementById('buchT').innerHTML=f.length===0
-    ?'<tr><td colspan="9" style="color:var(--muted);text-align:center;padding:22px">Keine Buchungen gefunden</td></tr>'
-    :f.map(b=>`<tr>
+    ?'<tr><td colspan="10" style="color:var(--muted);text-align:center;padding:22px">Keine Buchungen gefunden</td></tr>'
+    :f.map(b=>{
+      const hat=belege[b.id];
+      return `<tr>
       <td style="color:var(--muted);white-space:nowrap">${new Date(b.datum).toLocaleDateString('de-DE')}</td>
       <td><span style="width:6px;height:6px;border-radius:50%;display:inline-block;background:${b.typ==='einnahme'?'var(--sage)':'var(--terra)'}"></span></td>
       <td>${b.desc}</td><td style="font-size:.76rem;color:var(--muted)">${b.kat}</td>
@@ -1271,7 +1274,17 @@ function renderTable(){
       <td><span style="font-size:.7rem;background:var(--sand);padding:1px 7px;border-radius:20px">${b.konto}</span></td>
       <td>${taxBadge(b.steuer)}</td>
       <td class="tr ${b.typ==='einnahme'?'tg':'tr2'}">${b.typ==='einnahme'?'+':'-'}${fmt(b.betrag)}</td>
-      <td><button class="btn bg bs" onclick="del(${b.id},'${src(b)}')" style="color:var(--terra)">✕</button></td></tr>`).join('');
+      <td style="white-space:nowrap">
+        ${hat?`<a href="${hat.data}" download="${hat.name}" title="${hat.name} herunterladen" style="font-size:.68rem;color:var(--sage);text-decoration:none;border:1px solid var(--sage);padding:2px 7px;border-radius:4px">📎 Beleg</a>`
+            :`<label style="cursor:pointer;font-size:.68rem;color:var(--terra-dk);border:1.5px solid var(--terra);background:var(--white);padding:2px 7px;border-radius:4px" title="Beleg anhängen">📎 +<input type="file" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="uploadBelegTabelle(${b.id},this)"></label>`}
+      </td>
+      <td><button class="btn bg bs" onclick="del(${b.id},'${src(b)}')" style="color:var(--terra)">✕</button></td></tr>`;
+    }).join('');
+}
+
+function uploadBelegTabelle(buchId, input){
+  uploadBeleg(buchId, '', input);
+  renderTable();
 }
 
 function renderEtsy(){
@@ -1751,13 +1764,25 @@ function rechnungDrucken(){
   win.document.close();
 }
 
+function rechnungHatBuchung(r){
+  // Sucht eine Buchung, die zu dieser Rechnung passt: Notiz enthält Rechnungsnummer ODER (Betrag stimmt + Kunde im Text)
+  return allB().some(b => {
+    if(b.typ!=='einnahme') return false;
+    const notizTreffer = b.notiz && b.notiz.includes(r.nr);
+    const descTreffer = b.desc && b.desc.includes(r.nr);
+    const betragTreffer = Math.abs(b.betrag - r.gesamt) < 0.01;
+    return (notizTreffer || descTreffer) || (betragTreffer && b.desc && b.desc.toLowerCase().includes((r.kunde||'').toLowerCase().split(' ')[0]||'###'));
+  });
+}
+
 function renderRechnungListe(){
   const list=getRechnungen();
   const el=document.getElementById('rListe'); if(!el)return;
-  if(!list.length){el.innerHTML='<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:20px">Noch keine Rechnungen</td></tr>';return;}
+  if(!list.length){el.innerHTML='<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:20px">Noch keine Rechnungen</td></tr>';return;}
   el.innerHTML=[...list].reverse().map(r=>{
     const heute=new Date(); const fäl=r.fällig?new Date(r.fällig):null;
     const überfällig=fäl&&fäl<heute&&r.status==='offen';
+    const verbucht=rechnungHatBuchung(r);
     return `<tr>
       <td style="font-weight:400">${r.nr}</td>
       <td style="color:var(--muted)">${r.datum?new Date(r.datum).toLocaleDateString('de-DE'):''}</td>
@@ -1765,11 +1790,32 @@ function renderRechnungListe(){
       <td style="color:${überfällig?'var(--terra)':'var(--muted)'}">${fäl?fäl.toLocaleDateString('de-DE'):''}</td>
       <td><span style="padding:2px 9px;border-radius:20px;font-size:.72rem;font-weight:700;background:${r.status==='bezahlt'?'#e8f5e8':überfällig?'#fef0ec':'#fff3cd'};color:${r.status==='bezahlt'?'var(--sage)':überfällig?'var(--terra)':'#856404'}">${r.status==='bezahlt'?'Bezahlt':überfällig?'Überfällig':'Offen'}</span></td>
       <td class="tr" style="font-weight:400">${fmt(r.gesamt)}</td>
+      <td>${verbucht
+        ? `<span title="Eine passende Einnahme-Buchung wurde gefunden" style="font-size:.72rem;color:var(--sage);font-weight:700">✓ verbucht</span>`
+        : `<span title="Keine passende Buchung gefunden — bitte prüfen ob die Einnahme erfasst wurde" style="font-size:.72rem;color:var(--terra-dk);font-weight:700;cursor:pointer" onclick="buchungAusRechnung(${r.id})">⚠ fehlt — jetzt buchen</span>`}
+      </td>
       <td style="white-space:nowrap">
         ${r.status==='offen'?`<button class="btn bg bs" style="color:var(--sage)" onclick="markBezahlt(${r.id})">✓ Bezahlt</button>`:''}
         <button class="btn bg bs" style="color:var(--terra)" onclick="delRechnung(${r.id})">✕</button>
       </td></tr>`;
   }).join('');
+}
+
+function buchungAusRechnung(rechnungId){
+  const list=getRechnungen();
+  const r=list.find(x=>x.id===rechnungId);
+  if(!r)return;
+  if(!confirm('Soll die Einnahme aus Rechnung '+r.nr+' ('+fmt(r.gesamt)+') jetzt als Buchung erfasst werden?'))return;
+  data.push({
+    id:Date.now()+Math.random(), typ:'einnahme', datum:r.datum||today(),
+    betrag:r.gesamt, desc:'Rechnung '+r.nr+' — '+r.kunde,
+    kat:'Coaching', konto:'Sparkasse', skr:'8000', steuer:'ku',
+    notiz:'Rechnung '+r.nr
+  });
+  data.sort((a,b)=>b.datum.localeCompare(a.datum));
+  persist(); refresh();
+  renderRechnungListe();
+  toast('✓ Buchung zu Rechnung '+r.nr+' erfasst');
 }
 
 function markBezahlt(id){
