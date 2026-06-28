@@ -103,6 +103,8 @@ tr:hover td{background:#faf7f4;}
 .cb2{width:100%;border-radius:3px 3px 0 0;min-height:2px;}
 .cc-l{font-size:.58rem;color:var(--muted);}
 .tw-wrap{overflow-x:auto;}
+.info-i{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--terra-light);color:var(--terra-dk);font-size:.68rem;font-weight:700;cursor:pointer;vertical-align:middle;margin-left:2px;}
+.info-i:hover{background:var(--terra);color:white;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--brown);color:var(--cream);padding:9px 22px;border-radius:30px;font-size:.78rem;letter-spacing:.05em;z-index:999;opacity:0;transition:all .25s;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 @media(max-width:900px){.g4,.g5,.g3{grid-template-columns:repeat(2,1fr);}.g2{grid-template-columns:1fr;}}
@@ -190,6 +192,7 @@ tr:hover td{background:#faf7f4;}
     <div class="ni" onclick="showTab('oposten',this)"><span class="ni-ico">!</span>Offene Posten</div>
     <div class="ni" onclick="showTab('wiederk',this)"><span class="ni-ico">↺</span>Wiederkehrend</div>
     <div class="ni" onclick="showTab('schnell',this)"><span class="ni-ico">★</span>Schnell-Buchungen</div>
+    <div class="ni" onclick="showTab('belege',this)"><span class="ni-ico">📎</span>Belege</div>
     <div class="ni" onclick="showTab('eroeffnung',this)"><span class="ni-ico">◑</span>Eröffnung</div>
     <div class="ni" onclick="showTab('export',this)"><span class="ni-ico">↓</span>Export</div>
     <div class="ni" onclick="showTab('einstellungen',this)"><span class="ni-ico">⚙</span>Einstellungen</div>
@@ -236,7 +239,7 @@ tr:hover td{background:#faf7f4;}
       </div>
     </div>
     <div class="card">
-      <div class="sh"><span class="st">KU-Grenze 2025</span><div class="sl"></div></div>
+      <div class="sh"><span class="st">KU-Grenze 2025 <span class="info-i" onclick="kiOpen();kiAsk('Was bedeutet die Kleinunternehmer-Grenze von 25.000 Euro für mich genau?')" title="Erklärung">ⓘ</span></span><div class="sl"></div></div>
       <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px"><span id="kuTxt" style="color:var(--muted)">0 € / 25.000 €</span><span id="kuPrz" style="font-weight:700;color:var(--brown)">0 %</span></div>
       <div class="prog"><div class="pf" id="kuBar" style="width:0%;background:var(--sage)"></div></div>
       <div style="font-size:.76rem;color:var(--muted);margin-top:10px;line-height:1.6" id="kuHint"></div>
@@ -268,8 +271,14 @@ tr:hover td{background:#faf7f4;}
     </div>
     <div class="fr">
       <div class="fg"><label>Notiz / Rechnungs-Nr.</label><input type="text" id="bNot" placeholder="optional"></div>
+      <div class="fg"><label>Beleg / Rechnung anhängen</label><input type="file" id="bBeleg" accept=".pdf,.jpg,.jpeg,.png"></div>
     </div>
+    <div id="bBelegPreview" style="margin-bottom:10px;font-size:.78rem;color:var(--muted)"></div>
     <button class="btn bp" onclick="saveB()">Buchung speichern</button>
+  </div>
+  <div class="card" style="max-width:720px">
+    <div class="sh"><span class="st">Alle Belege</span><div class="sl"></div><button class="btn bg bs" onclick="showTab('belege',document.querySelectorAll('.ni')[7])">Übersicht →</button></div>
+    <div style="font-size:.8rem;color:var(--muted)">Hier oben kannst du beim Erfassen direkt einen Beleg anhängen. Eine vollständige Übersicht aller angehängten Belege findest du im Tab "📎 Belege".</div>
   </div>
   <div class="card" style="max-width:720px">
     <div class="sh"><span class="st">Schnell-Buchungen</span><div class="sl"></div><button class="btn bg bs" onclick="showTab('schnell',document.querySelectorAll('.ni')[7])">Bearbeiten →</button></div>
@@ -305,7 +314,7 @@ tr:hover td{background:#faf7f4;}
     <strong>Auszahlungen:</strong> Das ist dein Netto-Umsatz — deine echte Einnahme → SKR 03 Konto 8000.
   </div>
   <div class="card">
-    <div class="sh"><span class="st">Etsy CSV importieren</span><div class="sl"></div></div>
+    <div class="sh"><span class="st">Etsy CSV importieren <span class="info-i" onclick="kiOpen();kiAsk('Wie genau funktioniert der Etsy-Import und welche Steuerregeln gelten dabei?')" title="Erklärung">ⓘ</span></span><div class="sl"></div></div>
     <div class="notice">Shop-Manager → Finanzen → Zahlungen → "Herunterladen" (CSV). Alle Transaktionen werden automatisch erkannt und den richtigen SKR-03-Konten zugeordnet.</div>
     <div class="fr" style="max-width:360px;align-items:flex-end">
       <div class="fg"><label>Etsy CSV-Datei</label><input type="file" id="etsyF" accept=".csv" onchange="etsyImport()"></div>
@@ -357,7 +366,7 @@ tr:hover td{background:#faf7f4;}
   </div>
   <div class="g2" style="margin-bottom:14px">
     <div class="card">
-      <div class="sh"><span class="st">Rücklagen-Töpfe</span><div class="sl"></div><button class="btn bg bs" onclick="addRueckl()">+ Topf hinzufügen</button></div>
+      <div class="sh"><span class="st">Rücklagen-Töpfe <span class="info-i" onclick="kiOpen();kiAsk('Wie funktionieren die Rücklagen-Töpfe und warum sollte ich Geld zurücklegen?')" title="Erklärung">ⓘ</span></span><div class="sl"></div><button class="btn bg bs" onclick="addRueckl()">+ Topf hinzufügen</button></div>
       <div class="notice" style="margin-bottom:12px">Lege fest wie viel % deines Gewinns du zurücklegst. Wird automatisch aus dem aktuellen Jahresgewinn berechnet.</div>
       <div id="ruecklRechner"></div>
       <div style="margin-top:14px;padding-top:12px;border-top:2px solid var(--border)">
@@ -412,7 +421,7 @@ tr:hover td{background:#faf7f4;}
     </div>
   </div>
   <div class="card">
-    <div class="sh"><span class="st">SKR 03 Referenz-Tabelle</span><div class="sl"></div></div>
+    <div class="sh"><span class="st">SKR 03 Referenz-Tabelle <span class="info-i" onclick="kiOpen();kiAsk('Was ist SKR 03 und wie wähle ich das richtige Konto für eine Buchung?')" title="Erklärung">ⓘ</span></span><div class="sl"></div></div>
     <div class="tw-wrap"><table><thead><tr><th>Konto</th><th>Bezeichnung</th><th>Typ</th><th>Deine Kategorie</th></tr></thead>
     <tbody id="skrRefT"></tbody></table></div>
   </div>
@@ -554,11 +563,28 @@ tr:hover td{background:#faf7f4;}
     <div class="sh"><span class="st">Meine Schnell-Buchungen</span><div class="sl"></div></div>
     <div id="schnellListe"><span style="color:var(--muted);font-size:.8rem">Noch keine eigenen Schnell-Buchungen</span></div>
   </div>
-  <div class="card" style="margin-top:14px">
-    <div class="sh"><span class="st">Belege & Rechnungen anhängen</span><div class="sl"></div></div>
-    <div class="notice">Wähle eine Buchung aus und hänge den Beleg als Bild oder PDF an. Alles wird lokal in deinem Browser gespeichert.</div>
+</div>
+
+<!-- ══ BELEGE ══ -->
+<div id="tab-belege" class="tab-content">
+  <div class="card" style="margin-bottom:14px">
+    <div class="kpi-grid" style="margin-bottom:0">
+      <div class="kpi"><div class="kpi-l">Belege gesamt</div><div class="kpi-v" id="belegAnzahl">0</div><div class="kpi-s">angehängte Dateien</div></div>
+      <div class="kpi"><div class="kpi-l">Mit Beleg</div><div class="kpi-v g" id="belegMit">0</div><div class="kpi-s">von allen Buchungen</div></div>
+      <div class="kpi"><div class="kpi-l">Ohne Beleg</div><div class="kpi-v" style="color:#c5a063" id="belegOhne">0</div><div class="kpi-s">noch offen</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sh"><span class="st">Belege durchsuchen</span><div class="sl"></div></div>
     <div class="fr" style="align-items:flex-end">
       <div class="fg"><label>Buchung suchen</label><input type="text" id="belegSuche" placeholder="Stichwort …" oninput="renderBelegListe()"></div>
+      <div class="fg" style="max-width:170px"><label>Filter</label>
+        <select id="belegFilter" onchange="renderBelegListe()">
+          <option value="">Alle Buchungen</option>
+          <option value="mit">Nur mit Beleg</option>
+          <option value="ohne">Nur ohne Beleg</option>
+        </select>
+      </div>
     </div>
     <div id="belegListe" style="margin-top:8px"></div>
   </div>
@@ -639,15 +665,36 @@ tr:hover td{background:#faf7f4;}
 
   <!-- DATENSICHERUNG -->
   <div class="card" style="margin-top:14px;border-color:#b8e0b8;background:#f9fdf9">
-    <div class="sh"><span class="st">Datensicherung</span><div class="sl"></div></div>
+    <div class="sh"><span class="st">Datensicherung <span class="info-i" onclick="kiAsk('Wie funktioniert die Datensicherung und der USB-Stick-Ordner genau?')" title="Erklärung anzeigen">ⓘ</span></span><div class="sl"></div></div>
     <div class="notice ok" style="margin-bottom:14px"><strong>Wichtig:</strong> Alle Buchungen sind im Browser gespeichert. Wenn du den Cache leerst, sind sie weg. Sichere regelmäßig — auf USB-Stick oder in einen Ordner.</div>
+
+    <!-- Ordner-Verknüpfung -->
+    <div style="padding:14px 16px;background:var(--white);border:1.5px solid var(--terra);border-radius:10px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:.85rem;font-weight:700;color:var(--brown)">📁 Speicherordner (z. B. USB-Stick)</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:2px" id="ordnerStatus">Noch kein Ordner verknüpft</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn bo bs" onclick="ordnerWaehlen()">Ordner wählen</button>
+          <button class="btn bp bs" id="btnJetztSichern" onclick="jetztSichernInOrdner()" disabled>💾 Jetzt sichern</button>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:.74rem;color:var(--muted);line-height:1.6">
+        Einmal den Ordner auf deinem USB-Stick auswählen (Browser fragt nach Erlaubnis). Danach reicht <strong>ein Klick auf "Jetzt sichern"</strong> — die Datei bekommt automatisch das heutige Datum im Namen. Du kannst den Ordner jederzeit über "Ordner wählen" ändern. <em>Funktioniert in Chrome und Edge — beim Öffnen des Programms musst du die Verbindung einmal pro Sitzung neu bestätigen.</em>
+      </div>
+    </div>
+
+    <!-- Erinnerung -->
+    <div id="sicherungErinnerung" style="display:none;padding:12px 14px;background:#fff3cd;border-left:3px solid #d4a843;border-radius:8px;margin-bottom:14px;font-size:.8rem;color:#6b5510"></div>
+
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn bp" onclick="exportDaten()">💾 Alle Daten sichern (.json)</button>
+      <button class="btn bp" onclick="exportDaten()">💾 Daten herunterladen (.json)</button>
       <button class="btn bo" onclick="document.getElementById('importInput').click()">📂 Daten wiederherstellen</button>
       <input type="file" id="importInput" accept=".json" style="display:none" onchange="importDaten(this)">
     </div>
     <div style="margin-top:12px;font-size:.76rem;color:var(--muted);line-height:1.7">
-      <strong style="color:var(--brown)">USB-Stick:</strong> Speichere die HTML-Datei und die JSON-Sicherung zusammen auf dem Stick. So hast du Programm + Daten immer dabei und kannst es auf jedem PC in Chrome öffnen.
+      <strong style="color:var(--brown)">Hinweis:</strong> "Daten herunterladen" legt die Datei in deinem normalen Downloads-Ordner ab — die musst du danach manuell auf den Stick verschieben. Mit dem Ordner oben drüber geht's direkt ohne Umweg.
     </div>
     <div style="margin-top:10px;padding:10px 14px;background:var(--sand);border-radius:8px;font-size:.78rem">
       Letzte Sicherung: <span id="letzteBackup" style="font-weight:400;color:var(--brown)">noch keine</span>
@@ -858,6 +905,8 @@ function init(){
   checkWiederkehrend();
   // Initial render of rPositionen
   renderRPos();
+  // Ordner-Status anzeigen falls vorher schon mal verbunden
+  ordnerStatusBeimStart();
 }
 function today(){return new Date().toISOString().split('T')[0];}
 
@@ -872,7 +921,7 @@ function persist(){
 }
 function switchYear(y){year=parseInt(y);document.getElementById('expY').textContent=year;load();}
 
-const TITLES={dashboard:'Übersicht',erfassen:'Buchung erfassen',buchungen:'Alle Buchungen',etsy:'Etsy-Import',bankimport:'Bank-Import & Zuordnung',steuern:'Steuern & Reserven',skr:'SKR 03 Kontenplan',auswertung:'Auswertung',rechnung:'Rechnungs-Generator',oposten:'Offene Posten',wiederk:'Wiederkehrende Buchungen',schnell:'Schnell-Buchungen & Belege',eroeffnung:'Eröffnungssaldo & Altdaten',export:'Export & Steuer',einstellungen:'Einstellungen'};
+const TITLES={dashboard:'Übersicht',erfassen:'Buchung erfassen',buchungen:'Alle Buchungen',etsy:'Etsy-Import',bankimport:'Bank-Import & Zuordnung',steuern:'Steuern & Reserven',skr:'SKR 03 Kontenplan',auswertung:'Auswertung',rechnung:'Rechnungs-Generator',oposten:'Offene Posten',wiederk:'Wiederkehrende Buchungen',schnell:'Schnell-Buchungen',belege:'Belege & Rechnungen',eroeffnung:'Eröffnungssaldo & Altdaten',export:'Export & Steuer',einstellungen:'Einstellungen'};
 function showTab(id,el){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
@@ -885,7 +934,8 @@ function showTab(id,el){
   if(id==='steuern')renderSteuern();
   if(id==='etsy')renderEtsy();
   if(id==='skr')renderSKR();
-  if(id==='schnell'){renderSchnellListe();renderBelegListe();updSnKat();}
+  if(id==='schnell'){renderSchnellListe();updSnKat();}
+  if(id==='belege'){renderBelegListe();}
   if(id==='rechnung'){renderRechnungListe();}
   if(id==='eroeffnung'){renderEroeffnung();}
   if(id==='einstellungen'){renderEinstellungen();}
@@ -928,15 +978,39 @@ function saveB(){
   const d=document.getElementById('bDat').value;
   if(!b||b<=0){toast('Bitte Betrag eingeben');return;}
   if(!d){toast('Bitte Datum wählen');return;}
-  data.push({id:Date.now(),typ:document.getElementById('bTyp').value,datum:d,betrag:b,
+  const neueId=Date.now();
+  data.push({id:neueId,typ:document.getElementById('bTyp').value,datum:d,betrag:b,
     desc:document.getElementById('bDes').value||'–',kat:document.getElementById('bKat').value,
     konto:document.getElementById('bKon').value,skr:document.getElementById('bSKR').value,
     steuer:document.getElementById('bSt').value,notiz:document.getElementById('bNot').value});
   data.sort((a,b)=>b.datum.localeCompare(a.datum));
   persist();refresh();
+
+  // Beleg direkt mit hochladen falls eine Datei ausgewählt wurde
+  const belegInput=document.getElementById('bBeleg');
+  const belegFile=belegInput&&belegInput.files[0];
+  if(belegFile){
+    if(belegFile.size>2*1024*1024){
+      toast('✓ Buchung gespeichert — Beleg zu groß (max 2 MB), bitte separat anhängen');
+    } else {
+      const reader=new FileReader();
+      reader.onload=function(e){
+        const belege=getBelege();
+        belege[neueId]={name:belegFile.name, data:e.target.result};
+        saveBelege(belege);
+        renderTable();
+        toast('✓ Buchung & Beleg gespeichert');
+      };
+      reader.readAsDataURL(belegFile);
+    }
+    belegInput.value='';
+    document.getElementById('bBelegPreview').textContent='';
+  } else {
+    toast('✓ Gespeichert');
+  }
+
   ['bBet','bDes','bNot'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('bDat').value=today();
-  toast('✓ Gespeichert');
 }
 
 function qb(typ,desc,betrag,kat,konto,skr,steuer){
@@ -1509,18 +1583,38 @@ function getBelege(){return JSON.parse(localStorage.getItem('fk4_belege')||'{}')
 function saveBelege(b){localStorage.setItem('fk4_belege',JSON.stringify(b));}
 function renderBelegListe(){
   const suche=(document.getElementById('belegSuche')?.value||'').toLowerCase();
-  const all=allB().filter(b=>!suche||b.desc.toLowerCase().includes(suche)).slice(0,20);
+  const filter=document.getElementById('belegFilter')?.value||'';
   const belege=getBelege();
+  let all=allB().filter(b=>!suche||b.desc.toLowerCase().includes(suche));
+
+  if(filter==='mit') all=all.filter(b=>belege[b.id]);
+  if(filter==='ohne') all=all.filter(b=>!belege[b.id]);
+
+  // Statistik immer über ALLE Buchungen (ungefiltert)
+  const alleB=allB();
+  const mitBelegCount=alleB.filter(b=>belege[b.id]).length;
+  set('belegAnzahl', Object.keys(belege).length);
+  set('belegMit', mitBelegCount);
+  set('belegOhne', alleB.length-mitBelegCount);
+
+  all=all.slice(0,40);
   const el=document.getElementById('belegListe');if(!el)return;
   if(!all.length){el.innerHTML='<span style="color:var(--muted);font-size:.8rem">Keine Buchungen gefunden</span>';return;}
+
   el.innerHTML=all.map(b=>{
     const hat=belege[b.id];
-    return `<div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #f0ebe6;flex-wrap:wrap">
+    const isImg=hat&&/\.(jpe?g|png)$/i.test(hat.name||'');
+    return `<div style="display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid #f0ebe6;flex-wrap:wrap">
+      ${hat
+        ? (isImg
+            ? `<img src="${hat.data}" alt="Beleg" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid var(--border);flex-shrink:0">`
+            : `<div style="width:38px;height:38px;border-radius:6px;background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">📄</div>`)
+        : `<div style="width:38px;height:38px;border-radius:6px;border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.8rem;flex-shrink:0">—</div>`}
       <span style="color:var(--muted);font-size:.74rem;white-space:nowrap">${new Date(b.datum).toLocaleDateString('de-DE')}</span>
-      <span style="flex:1;font-size:.81rem">${b.desc}</span>
+      <span style="flex:1;font-size:.81rem;min-width:120px">${b.desc}</span>
       <span style="font-size:.81rem;font-weight:400;color:${b.typ==='einnahme'?'var(--sage)':'var(--terra)'}">${b.typ==='einnahme'?'+':'-'}${fmt(b.betrag)}</span>
-      ${hat?`<a href="${hat.data}" download="${hat.name}" style="font-size:.71rem;color:var(--sage);text-decoration:none;border:1px solid var(--sage);padding:2px 8px;border-radius:4px">📎 ${hat.name}</a><button style="background:none;border:none;color:var(--terra);cursor:pointer;font-size:.8rem" onclick="delBeleg(${b.id})">✕</button>`
-           :`<label style="cursor:pointer;font-size:.71rem;color:var(--terra);border:1px solid var(--terra);padding:2px 8px;border-radius:4px">📎 anhängen<input type="file" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="uploadBeleg(${b.id},'${b.desc.replace(/'/g,"\\'")}',this)"></label>`}
+      ${hat?`<a href="${hat.data}" download="${hat.name}" title="${hat.name}" style="font-size:.71rem;color:var(--sage);text-decoration:none;border:1px solid var(--sage);padding:3px 9px;border-radius:4px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📎 ${hat.name}</a><button style="background:none;border:none;color:var(--terra);cursor:pointer;font-size:.8rem" onclick="delBeleg(${b.id})" title="Beleg entfernen">✕</button>`
+           :`<label style="cursor:pointer;font-size:.71rem;color:var(--terra-dk);border:1.5px solid var(--terra);background:var(--white);padding:3px 9px;border-radius:4px">📎 anhängen<input type="file" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="uploadBeleg(${b.id},'${b.desc.replace(/'/g,"\\'")}',this)"></label>`}
     </div>`;
   }).join('');
 }
@@ -1537,9 +1631,8 @@ function delBeleg(buchId){const b=getBelege();delete b[buchId];saveBelege(b);ren
 // ══════════════════════════════════
 // DATEN EXPORT / IMPORT (USB-Stick)
 // ══════════════════════════════════
-function exportDaten(){
+function alleDatenSammeln(){
   const alle={};
-  // Alle Jahre sichern
   for(let y=2023;y<=2026;y++){
     const d=localStorage.getItem('fk4_'+y);
     const e=localStorage.getItem('fk4e_'+y);
@@ -1549,16 +1642,20 @@ function exportDaten(){
   alle['fk4_rueckl']=getRueckl();
   alle['fk4_schnell']=getSchnell();
   alle['fk4_belege']=getBelege();
+  alle['fk4_rechnungen']=getRechnungen();
+  alle['fk4_abs']=getAbs();
   alle['_exportiert']=new Date().toLocaleString('de-DE');
   alle['_version']='4';
+  return alle;
+}
 
+function exportDaten(){
+  const alle=alleDatenSammeln();
   const blob=new Blob([JSON.stringify(alle,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   a.download='Fuehlkraft-Buchhaltung-Backup-'+new Date().toISOString().slice(0,10)+'.json';
   a.click();
-
-  // Datum der letzten Sicherung merken
   localStorage.setItem('fk4_lastbackup', new Date().toLocaleString('de-DE'));
   updateBackupHint();
   toast('✓ Daten gesichert — bitte auf USB-Stick speichern!');
@@ -1593,6 +1690,90 @@ function updateBackupHint(){
   if(!el)return;
   const d=localStorage.getItem('fk4_lastbackup');
   el.textContent=d||'noch keine';
+  pruefeSicherungErinnerung();
+}
+
+// ══════════════════════════════════
+// ORDNER-VERKNÜPFUNG (File System Access API)
+// ══════════════════════════════════
+var gewaehlterOrdner=null; // FileSystemDirectoryHandle, nur für diese Sitzung gültig
+
+function fsApiVerfuegbar(){
+  return typeof window.showDirectoryPicker === 'function';
+}
+
+async function ordnerWaehlen(){
+  if(!fsApiVerfuegbar()){
+    toast('Diese Funktion braucht Chrome oder Edge (aktuelle Version)');
+    document.getElementById('ordnerStatus').innerHTML='<span style="color:var(--terra-dk)">Nicht unterstützt in diesem Browser — bitte Chrome oder Edge verwenden.</span>';
+    return;
+  }
+  try{
+    const handle=await window.showDirectoryPicker({mode:'readwrite'});
+    gewaehlterOrdner=handle;
+    // Ordnername merken (nicht den Zugriff selbst — der ist pro Sitzung)
+    localStorage.setItem('fk4_ordnername', handle.name);
+    document.getElementById('ordnerStatus').innerHTML='<span style="color:var(--sage)">✓ Verbunden mit: "'+handle.name+'"</span>';
+    document.getElementById('btnJetztSichern').disabled=false;
+    toast('✓ Ordner "'+handle.name+'" verknüpft');
+  }catch(err){
+    if(err.name!=='AbortError'){
+      toast('Ordner-Auswahl fehlgeschlagen: '+err.message);
+    }
+  }
+}
+
+async function jetztSichernInOrdner(){
+  if(!gewaehlterOrdner){
+    toast('Bitte erst einen Ordner wählen');
+    return;
+  }
+  try{
+    const alle=alleDatenSammeln();
+    const datum=new Date().toISOString().slice(0,10);
+    const dateiname='Fuehlkraft-Buchhaltung-Backup-'+datum+'.json';
+
+    const fileHandle=await gewaehlterOrdner.getFileHandle(dateiname,{create:true});
+    const writable=await fileHandle.createWritable();
+    await writable.write(JSON.stringify(alle,null,2));
+    await writable.close();
+
+    localStorage.setItem('fk4_lastbackup', new Date().toLocaleString('de-DE'));
+    localStorage.setItem('fk4_lastbackup_ts', Date.now());
+    updateBackupHint();
+    document.getElementById('ordnerStatus').innerHTML='<span style="color:var(--sage)">✓ Gesichert: '+dateiname+' in "'+gewaehlterOrdner.name+'"</span>';
+    toast('✓ Gesichert in '+gewaehlterOrdner.name+'/'+dateiname);
+  }catch(err){
+    toast('Sicherung fehlgeschlagen: '+err.message);
+    document.getElementById('ordnerStatus').innerHTML='<span style="color:var(--terra-dk)">Zugriff verloren — bitte Ordner erneut wählen.</span>';
+    document.getElementById('btnJetztSichern').disabled=true;
+    gewaehlterOrdner=null;
+  }
+}
+
+function pruefeSicherungErinnerung(){
+  const el=document.getElementById('sicherungErinnerung');
+  if(!el)return;
+  const lastTs=parseInt(localStorage.getItem('fk4_lastbackup_ts')||'0');
+  const tageSeitSicherung=lastTs?(Date.now()-lastTs)/86400000:999;
+  const buchungenVorhanden=allB().length>0;
+
+  if(buchungenVorhanden && tageSeitSicherung>7){
+    el.style.display='block';
+    el.innerHTML=lastTs
+      ? '⚠ Deine letzte Sicherung ist '+Math.floor(tageSeitSicherung)+' Tage her. Zeit für eine neue Sicherung!'
+      : '⚠ Du hast noch keine Sicherung gemacht. Falls der Browser-Speicher gelöscht wird, gehen deine Daten verloren — bitte jetzt sichern!';
+  } else {
+    el.style.display='none';
+  }
+}
+
+function ordnerStatusBeimStart(){
+  const name=localStorage.getItem('fk4_ordnername');
+  const statusEl=document.getElementById('ordnerStatus');
+  if(name && statusEl){
+    statusEl.innerHTML='<span style="color:var(--muted)">Zuletzt verbunden mit "'+name+'" — bitte "Ordner wählen" erneut klicken, um die Verbindung für diese Sitzung zu bestätigen.</span>';
+  }
 }
 
 // ══════════════════════════════════
